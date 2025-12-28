@@ -4,7 +4,7 @@ namespace App\Governance\Guards;
 
 use CodeIgniter\Exceptions\RuntimeException;
 
-class TenantGuard
+class TenantGovernanceGuard
 {
     /**
      * Verify that tenant context is present
