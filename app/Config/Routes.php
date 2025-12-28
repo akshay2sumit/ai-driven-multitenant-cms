@@ -44,11 +44,13 @@ $routes->group('t', ['namespace' => 'App\\Controllers'], function($routes) {
 });
 
 // Root redirect (in a real app, you might have a landing page)
-$routes->get('/', function() {
-    // In a real implementation, this would go to a landing page
-    // For now, we'll redirect to the admin interface
-    return redirect()->to('/t/default');
-});
+// $routes->get('/', function() {
+//     // In a real implementation, this would go to a landing page
+//     // For now, we'll redirect to the admin interface
+//     return redirect()->to('/t/default');
+// });
+$routes->get('/', 'LandingController::index');
+
 
 // Fallback route - must be last
 $routes->set404Override(function() {
