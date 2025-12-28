@@ -45,6 +45,12 @@ $RECYCLE.BIN/
 .vagrant
 Vagrantfile
 
+/vendor/
+/writable/*
+!/writable/.htaccess
+
+*.env*
+
 #-------------------------
 # Temporary Files
 #-------------------------
