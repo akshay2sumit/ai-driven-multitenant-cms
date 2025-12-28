@@ -1,25 +1,26 @@
 # Developer Guide: Overview
 
-*Last Updated: 2025-12-27*  
+*Last Updated: 2025-12-29*  
 *Governance Version: 1.3.3 LTS*  
-*Phase: 9 - Public Runtime Boundary (Implementation Complete)*
+*Phase: 11 - Documentation Audit (Completed)*
 
 ## Introduction
 This guide is for developers working on the AI-Driven Multi-Tenant CMS. It documents the current implementation status, architecture, and development practices.
 
-## Current Implementation Status (Phase 9 - Implementation Complete)
-- **Public Runtime**: Basic boundary established
-  - `/p/{tenant}` namespace added
+## Current Implementation Status (Phase 11 - Documentation Audit Complete)
+- **Public Runtime**: Boundary established (fail-closed)
+  - `/p/{tenant}` namespace exists but returns 404
   - Read-only access enforced
-  - 404-by-design behavior
-  - No content access or rendering
-  - Strict tenant isolation
+  - 404-by-design behavior is working as intended
+  - No content access or rendering implemented
+  - Strict tenant isolation maintained
 
 - **CMS Pages**: Basic CRUD operations only
-  - Publishing workflow (Design Complete - ADR-005)
-  - Public rendering (Design Only - ADR-006)
+  - No publishing workflow implemented
+  - No public rendering implemented
   - No versioning or history
   - No media uploads
+  - All operations tenant-scoped
 
 - **Tenancy**: Path-based resolution with strict isolation
   - `/t/{tenant_identifier}/...` for admin
@@ -41,12 +42,11 @@ This guide is for developers working on the AI-Driven Multi-Tenant CMS. It docum
 - **Security**: Strict tenant isolation
 - **No Content Access**: Public routes return 404
 
-### Public Rendering Semantics (Design Only)
-- **URL Strategy**: Subdomain-based routing (`{tenant}.example.com`)
-- **Content Resolution**: Only published content will be rendered (future)
-- **Caching**: Multi-layered caching strategy (future)
-- **Theming**: Tenant-specific theming support (future)
-- **Security**: Strict tenant isolation enforced
+### Public Rendering Status
+- **Current State**: Not Implemented
+- **Design**: Documented in ADR-006 (Design Complete)
+- **Security**: System remains in fail-closed state
+- **No Implementation**: No rendering code exists in the codebase
 
 ### Important Warnings for Developers
 - **Public Runtime is a Boundary Only**
@@ -54,9 +54,9 @@ This guide is for developers working on the AI-Driven Multi-Tenant CMS. It docum
   - 404 responses are expected behavior
   - This is not a bug or misconfiguration
 
-### What NOT to Implement Yet
+### Implementation Constraints
 - **DO NOT** add views/templates to public runtime
-- **DO NOT** bypass publishing logic
+- **DO NOT** implement any rendering logic
 - **DO NOT** query content from public controllers
 - **DO NOT** implement caching mechanisms
 - **DO NOT** create theme templates
@@ -65,19 +65,19 @@ This guide is for developers working on the AI-Driven Multi-Tenant CMS. It docum
 - **Explicit over Implicit**: Clear contracts and boundaries
 - **Current State Only**: Document what exists, not future plans
 
-## Core Architecture (Phase 9 - Implementation Complete)
+## Core Architecture (Phase 11 - Documentation Audit Complete)
 - **Framework**: CodeIgniter 4.6.4
 - **Tenant Resolution**:
   - Admin: Path-based (`/t/{tenant}/...`)
   - Public: Path-based (`/p/{tenant}/...`) - 404-by-design
-  - Future: Subdomain-based (`{tenant}.example.com`)
+  - Future designs documented in ADR-006
 - **Database**: MySQL 8.0+/MariaDB 10.5+ with tenant isolation
 - **Documentation**:
   - ADR-002: System Architecture Baseline
   - ADR-003: Tenant Resolution Strategy
   - ADR-005: Publishing & Visibility (Design Complete)
-  - ADR-006: Public Rendering Strategy (Design Phase)
-  - Phase 9 Implementation Notes: Public Runtime Boundary
+  - ADR-006: Public Rendering Strategy (Design Complete)
+  - Phase 11: Documentation Audit Complete
 
 ## Development Setup
 1. **Prerequisites**:
@@ -131,22 +131,25 @@ TenantGuard::ensureTenantContext();
 TenantGuard::ensureTenantMatch($expectedTenantId);
 ```
 
-## Implementation Ceiling (Phase 7)
+## Implementation Ceiling (Phase 11)
 
-### Implementation Constraints (Phase 7)
+### Implementation Constraints (Phase 11)
 
-**DO NOT IMPLEMENT YET**:
-- Any publishing workflow code
+**DO NOT IMPLEMENT**:
+- Publishing workflow code
 - Public content rendering
 - Scheduled publishing logic
 - Visibility enforcement
-- Any UI for publishing controls
+- UI for publishing controls
+- Any rendering endpoints
+- Theme system
+- Public API endpoints
 
-### What's Not Implemented (Phase 7)
-This version implements ONLY the following:
+### Current Implementation (Phase 11)
 - Basic authentication (login/logout)
-- CMS Pages CRUD operations
+- CMS Pages CRUD operations (tenant-scoped)
 - Path-based multi-tenancy
+- Documentation audit complete
 
 
 ## Tenant Resolution Flow

@@ -29,19 +29,34 @@ The defining characteristic of this project is governance-first development. Arc
 
 The CMS is expected to evolve over time, but only through approved architectural changes, not ad-hoc coding.
 
-## Current Status (Phase 6 - Post-Remediation)
+## Current Status (Phase 11 - Documentation Audit Complete)
 - CodeIgniter 4 (v4.6.4) with multi-tenant architecture
-- Governance framework active (.windsurfrules v1.3.2 LTS)
+- Governance framework active (.windsurfrules v1.3.3 LTS)
 - Core tenant resolution implemented (ADR-003)
 - CMS Pages module (CRUD operations, non-public)
-- Documentation and observability structure in place
-- Basic tenant context and guard systems operational
+- Documentation audit completed for all artifacts
+- Public runtime boundary established (404-by-design)
 - No publishing/visibility features implemented
+- No public content rendering implemented
 - No AI features enabled
 
-## Compliance Status
-- [x] All documentation updated to reflect current state
+## Deployment & Operations
+- **Status**: Deployment architecture intentionally deferred to future phase
+- **Documentation**: See [Deployment Overview](../docs/deployment/overview.md)
+- **Key Points**:
+  - No hosting platform or infrastructure assumed
+  - No deployment configurations in place
+  - Backup/recovery not applicable (no data layer)
+  - Public runtime is fail-closed by design
+
+## Compliance Status (Phase 11)
+- [x] Documentation audit completed for all artifacts
+- [x] Public runtime properly documented as fail-closed
+- [x] No publishing schema or workflow exists
+- [x] No public UI or rendering surface implemented
 - [x] ADRs properly linked and referenced
 - [x] No undocumented features or functionality
 - [x] Governance artifacts in sync with implementation
 - [x] Clear separation between implemented and planned features
+- [x] All documentation reflects current system state only
+- [x] Deployment and operations properly documented as deferred

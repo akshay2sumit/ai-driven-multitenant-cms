@@ -1,29 +1,30 @@
 # User Guide: Overview
 
-*Last Updated: 2025-12-27*  
+*Last Updated: 2025-12-29*  
 *Governance Version: 1.3.3 LTS*  
-*Phase: 9 - Public Runtime Boundary*
+*Phase: 11 - Documentation Audit (Completed)*
 
 ## Welcome to AI-Driven Multi-Tenant CMS
 This is the user guide for the CMS administration interface. The current implementation provides basic content management capabilities with strict tenant isolation.
 
-## Current Features (Phase 9)
+## Current Features (Phase 11)
 - **Pages Management**: Basic create, read, update, delete operations
 - **Multi-Tenant Support**: Isolated content per tenant
 - **Simple Interface**: Focused on core functionality
-- **Public Runtime**: Basic boundary established (404-by-design)
+- **Public Runtime**: Boundary established (404-by-design, fail-closed)
 
 ## Important Notice: Public Site Status
-- The public website is **not yet available**
+- The public website is **not implemented**
 - Public URLs (starting with `/p/`) return 404 by design
-- This is expected behavior and not a configuration error
-- Public content delivery will be implemented in a future release
+- This is the intended fail-closed security measure
+- No timeline exists for public content delivery
 
 ## Current Limitations
 - No user authentication
 - No media management
-- No publishing workflow
-- No public content rendering (404 by design)
+- No publishing workflow exists
+- No public content rendering exists (404 by design)
+- No content delivery system implemented
 
 ## Accessing the Admin Interface
 
@@ -49,10 +50,12 @@ https://yourdomain.com/t/{your-tenant-identifier}/admin
 
 ## Available Features
 
-### Pages Management
+### Pages Management (Tenant-Admin Only)
 - Create and edit simple text pages
 - Basic formatting options
 - No rich text or media support
+- Content is tenant-scoped
+- No publishing or versioning
 
 ## Common Tasks
 - [Creating a New Page](common-tasks.md#creating-a-new-page)
