@@ -36,8 +36,10 @@ class Home extends BaseController
         }
 
         // Get the content path (everything after the tenant segment)
-        $path = trim(str_replace("/p/{$tenant}", '', $this->request->getUri()->getPath()), '/');
-        
+        // $path = trim(str_replace("/p/{$tenant}", '', $this->request->getUri()->getPath()), '/');
+        $segments = $this->request->getUri()->getSegments();
+        $path = implode('/', array_slice($segments, 2)); // after /p/{tenant}
+
         // In a real implementation, you would fetch the content from your data store
         // For this minimal implementation, we'll use a placeholder
         $content = $this->getContent($tenant, $path);
@@ -90,23 +92,24 @@ class Home extends BaseController
         // based on the tenant and path. For this example, we'll return a placeholder.
         
         // Default to 'index' if path is empty
-        if (empty($path)) {
-            $path = 'index';
-        }
+        // if (empty($path)) {
+        //     $path = 'index';
+        // }
         
-        // This is a simplified example - in reality, you'd query your database here
-        $content = [
-            'id' => 'example-content',
-            'tenant_id' => $tenant,
-            'path' => $path,
-            'title' => 'Example Content',
-            'body' => '<h1>Example Content</h1><p>This is a minimal example of published content.</p>',
-            'current_state' => 'published',
-            'created_at' => date('c'),
-            'updated_at' => date('c')
-        ];
+        // // This is a simplified example - in reality, you'd query your database here
+        // $content = [
+        //     'id' => 'example-content',
+        //     'tenant_id' => $tenant,
+        //     'path' => $path,
+        //     'title' => 'Example Content',
+        //     'body' => '<h1>Example Content</h1><p>This is a minimal example of published content.</p>',
+        //     'current_state' => 'published',
+        //     'created_at' => date('c'),
+        //     'updated_at' => date('c')
+        // ];
         
-        return $content;
+        // return $content;
+        return null;
     }
     
     /**
