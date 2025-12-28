@@ -1,54 +1,47 @@
-# Project Summary: CI4 Application Template
+# Project Summary: AI-Driven Multi-Tenant CMS (CI4-based)
 
-## Project Purpose and Goals
-CI4 Application Template is an AI-integrated Content Management System designed to provide intelligent content creation, management, and delivery capabilities. The primary goals are:
-- Enable AI-assisted content workflows
-- Provide a scalable, multi-tenant CMS platform
-- Ensure maintainable code through governance rules
-- Support flexible deployment environments
+## What This Project Is
 
-## Current Project Status
-- **Phase**: Structure Creation (Complete)
-- **Completion**: Full directory structure, governance artifacts, documentation, dashboard, and bootstrap context created. Self-audit passed.
-- **Next Milestones**: Copy into CI4 project, implement core code, AI integration, testing, deployment.
+This project is a governed, AI-assisted, multi-tenant Content Management System (CMS) designed to support a wide range of small and medium businesses such as:
+- Educational institutions
+- Clinics and healthcare practices
+- Agencies and service providers
+- Suppliers and small enterprises
 
-## Confirmed Technical Specifications
-- **Primary Language**: PHP
-- **Framework**: CodeIgniter 4
-- **Application Type**: Web / API / Hybrid (CMS)
-- **Deployment Environment**: Flexible (shared hosting, VPS, container, cloud)
-- **Database**: Flexible (MySQL, PostgreSQL, etc.)
-- **Configuration**: Environment-driven
-- **Security**: Follows PHP/CI4 best practices, no hardcoded secrets
+The system is built on CodeIgniter 4, not as a framework experiment, but as a stable, hosting-friendly foundation suitable for shared and reseller hosting environments.
 
-## High-Level Architecture Overview
-- **Frontend**: Web-based dashboard for project observability
-- **Backend**: CI4 MVC with AI integration modules
-- **Data Layer**: Database with migrations
-- **Governance**: Comprehensive logging, documentation, and ADR system
+The defining characteristic of this project is governance-first development. Architecture, decisions, and evolution are controlled through explicit documentation, ADRs, and execution rules so the system can safely evolve across time, contributors, and AI agents.
 
-## Key Decisions and ADR References
-- ADR-001: Environment Readiness - Confirmed CI4 setup requirements
+## Core Goals
+- Provide a single CMS platform adaptable to multiple business types
+- Support true multi-tenancy with strict isolation
+- Be usable by non-technical clients with excellent UX
+- Minimize manual maintenance through AI-assisted automation
+- Remain deployable on low-cost hosting environments
+- Ensure the system can be paused, resumed, or handed off across LLMs without loss of intent
 
-## Deployment Strategy
-- Flexible deployment: Local, shared hosting, VPS, container, cloud.
-- Artifacts: .env.example, Dockerfile, docker-compose.yml.
-- Readiness: Structure supports all targets; environment-driven config.
+## Development Philosophy
+- Governance before code
+- Explicit authorization for every phase
+- No silent execution
+- No undocumented decisions
+- Everything auditable and restartable
 
-## Open Tasks and Roadmap Highlights
-1. Implement core CMS controllers and models
-2. Integrate AI services (e.g., content generation APIs)
-3. Set up multi-tenancy features
-4. Configure deployment pipelines
-5. Add comprehensive testing suite
+The CMS is expected to evolve over time, but only through approved architectural changes, not ad-hoc coding.
 
-## Known Issues and Risks
-- AI integration dependencies may require external API keys (handle securely)
-- Multi-tenancy implementation complexity
-- Deployment environment variability
+## Current Status (Phase 6 - Post-Remediation)
+- CodeIgniter 4 (v4.6.4) with multi-tenant architecture
+- Governance framework active (.windsurfrules v1.3.2 LTS)
+- Core tenant resolution implemented (ADR-003)
+- CMS Pages module (CRUD operations, non-public)
+- Documentation and observability structure in place
+- Basic tenant context and guard systems operational
+- No publishing/visibility features implemented
+- No AI features enabled
 
-## Governance Expectations
-- All development must follow `.windsurfrules` strictly
-- Document all decisions in ADRs
-- Maintain progress logs and summaries
-- Ensure deployment readiness at all times
+## Compliance Status
+- [x] All documentation updated to reflect current state
+- [x] ADRs properly linked and referenced
+- [x] No undocumented features or functionality
+- [x] Governance artifacts in sync with implementation
+- [x] Clear separation between implemented and planned features

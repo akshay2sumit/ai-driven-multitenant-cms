@@ -1,43 +1,97 @@
 # Deployment Strategy
 
-## Environments
-- Development: Local with XAMPP/MAMP or Docker
-- Staging: VPS or cloud instance
-- Production: VPS, cloud (AWS/GCP/Azure), or shared hosting
+*Last Updated: 2025-12-26*  
+*Governance Version: 1.3.2 LTS*  
+*Phase: 6 - Post-Remediation*
 
-## Tools
-- Docker for containerized deployment
-- Composer for PHP dependencies
-- Git for version control
-- CI/CD pipelines (GitHub Actions, etc.)
+## Current Deployment Reality
+- **Status**: Local Development Only
+- **Version**: 0.1.0 (Not Production Ready)
+- **Last Validated**: 2025-12-26
 
-## Process
-1. Clone repository
-2. Copy .env.example to .env and configure
-3. Run `composer install --no-dev --optimize-autoloader`
-4. Run migrations: `php spark migrate`
-5. Set up web server (Apache/Nginx) to point to public/
-6. Configure SSL/HTTPS
-7. Test deployment
+### What Exists
+- Basic authentication system
+- CMS Pages CRUD operations
+- Path-based multi-tenancy (`/t/{tenant}/...`)
+- Local development environment setup
 
-## Container Deployment
-- Use provided Dockerfile and docker-compose.yml
-- Run `docker-compose up -d` for quick setup
+### What's Missing
+- Production deployment configuration
+- User authentication hardening
+- Media management
+- Publishing workflow
+- Public content rendering
+- AI features
 
-## Shared Hosting
-- Upload files to hosting
-- Configure .env via hosting panel
-- Ensure PHP 7.4+, MySQL
+## Supported Environments
+- **Development Only**: Local with XAMPP/LAMPP (PHP 8.1+)
+  - Path: `/opt/lampp/htdocs/aibos`
+  - Access: `http://localhost/aibos`
+  - **Not suitable for production use**
 
-## Cloud Deployment
-- Use services like Heroku, DigitalOcean App Platform
-- Configure environment variables
-- Set up databases
+## Explicitly Not Supported (Phase 6)
+- ❌ Production deployments
+- ❌ Multi-tenant production use
+- ❌ Containerized deployment
+- ❌ Cloud deployments
+- ❌ Shared hosting
+- ❌ Multi-server setups
+- ❌ Public content rendering
+- ❌ Media uploads
+- ❌ AI features
 
-## Monitoring
-- Health checks via dashboard
-- Logs in writable/logs/
+## Important Considerations
+1. **Tenant Resolution**:
+   - System uses path-based tenant resolution: `/t/{tenant}/...`
+   - Web server must be configured to support path-based routing
+   - No subdomain support in current implementation
 
-## Rollback
-- Keep backups
-- Use Git tags for releases
+2. **Governance Requirements**:
+   - All deployments must maintain `.windsurfrules` compliance
+   - No deployment should bypass established guardrails
+   - Feature flags must be explicitly managed per environment
+
+3. **Required Pre-Deployment**:
+   - Complete database schema implementation
+   - Implement authentication/authorization
+   - Set up proper logging and monitoring
+   - Configure production-grade security settings
+
+## Development Setup
+```bash
+# Clone repository
+git clone [repository-url] /opt/lampp/htdocs/aibos
+
+# Install dependencies
+composer install --no-dev --optimize-autoloader
+
+# Configure environment
+cp env .env
+# Edit .env with appropriate settings
+
+# Set proper permissions
+chmod -R 755 writable/
+chown -R www-data:www-data writable/
+```
+
+## Known Limitations
+- No automated deployment process defined
+- No CI/CD pipeline configured
+- No production monitoring in place
+- No backup/restore procedures defined
+- No performance optimization for production
+
+## Important Notes
+- This is a development preview only
+- No production deployment guidance is provided or supported
+- All changes are local and not persistent
+- No data migration path exists for future versions
+
+## Current Implementation Status
+- **Authentication**: Basic implementation complete
+- **CMS Pages**: CRUD operations only
+- **Multi-tenancy**: Path-based resolution implemented
+- **Frontend**: Admin interface only, no public pages
+- **AI Integration**: Not implemented
+
+> **Warning**: This is not a production-ready system. Do not use with real data or in any environment exposed to the internet.

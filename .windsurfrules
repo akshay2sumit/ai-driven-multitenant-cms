@@ -1,6 +1,6 @@
 # ============================================================
 # .windsurfrules — Universal AI Software Development Ruleset
-# Version: 1.3.1 (STABLE)
+# Version: v1.3.3 LTS — Added mandatory post-execution documentation enforcement for execution agents and phase documentation audit.
 # Integrity: SHA-256 checksum file required for verification
 # Scope: All software projects using AI coding agents
 # ============================================================
@@ -638,7 +638,31 @@ Rules:
 This rule applies to all governance artifacts,
 documentation, logs, and code files.
 
+#----------------------------------#--------------------------
+MANDATORY POST-PHASE DOCUMENTATION AUDIT
+#-------------------------------------------------------------
+After the completion of EVERY phase (design or implementation), a full documentation audit is REQUIRED before any new phase may begin.
 
+This audit MUST verify and, if necessary, update all governance-mandated documentation, including but not limited to:
+
+- Governance documents (project summary, system context, decision log, prompt log, progress log)
+- Architecture documentation
+- ADRs and ADR index
+- Developer guide
+- User guide
+- LLM handoff documentation
+- Deployment documentation
+
+Rules:
+- No phase transition is permitted until the documentation audit is explicitly completed and confirmed.
+- Documentation must reflect the CURRENT system truth only (no aspirational or future features).
+- Any documentation drift discovered during the audit MUST be corrected before proceeding.
+- The audit outcome must be recorded in governance logs.
+- Agents MUST NOT assume documentation is “close enough”.
+
+Failure to perform or confirm this audit INVALIDATES the phase completion.
+
+------------------------------------------------------------
 # ------------------------------------------------------------
 # 17. NEW CHAT BOOTSTRAP & CONTEXT EXPORT (MANDATORY)
 # ------------------------------------------------------------
@@ -833,6 +857,60 @@ The agent MUST:
 - Ensure backups are taken
 
 ------------------------------------------------------------
+
+# ------------------------------------------------------------
+# 6. MANDATORY POST-EXECUTION DOCUMENTATION (SWE-1)
+# ------------------------------------------------------------
+
+All execution agents (including SWE-1) MUST perform
+documentation updates after EVERY authorized task,
+unless explicitly exempted in writing by the Governance Authority.
+
+After completing any task, the agent MUST:
+
+1. Update governance/prompt-log.md
+   - Record the exact instruction received
+   - Include:
+     - Date
+     - Phase
+     - Intent
+     - Authorized scope
+     - Explicit prohibitions
+
+2. Update governance/progress-log.md
+   - Reflect the accurate current phase status
+   - Mark phases as:
+     - Authorized
+     - In progress
+     - Completed
+     - Paused (if applicable)
+
+3. Update docs/llm-handoff/current-state.md
+   - Summarize the current system state
+   - List accepted ADRs
+   - Clearly state:
+     - What actions are allowed next
+     - What actions are explicitly forbidden
+
+4. Update developer documentation when applicable
+   - If developer behavior, APIs, lifecycle, or contracts are affected:
+     - Update docs/developer-guide/overview.md (or equivalent)
+
+5. Update user documentation when applicable
+   - If user-visible behavior, URLs, or flows are affected:
+     - Update docs/user-guide/overview.md or getting-started.md
+
+ENFORCEMENT RULES:
+- Documentation MUST reflect reality
+- No assumptions are permitted
+- No documentation step may be skipped
+- If uncertain whether documentation requires updating → UPDATE IT
+
+Failure to perform required documentation updates constitutes
+a GOVERNANCE VIOLATION. The associated work MAY be rejected
+or invalidated.
+
+
 7. LONG-TERM USAGE
 ------------------------------------------------------------
 - Treat .windsurfrules as a locked governance document.
@@ -840,6 +918,30 @@ The agent MUST:
 - Update rules only with version increments and justification.
 
 ------------------------------------------------------------
+
+MANDATORY POST-PHASE DOCUMENTATION AUDIT
+
+After the completion of EVERY phase (design or implementation), a full documentation audit is REQUIRED before any new phase may begin.
+
+This audit MUST verify and, if necessary, update all governance-mandated documentation, including but not limited to:
+
+- Governance documents (project summary, system context, decision log, prompt log, progress log)
+- Architecture documentation
+- ADRs and ADR index
+- Developer guide
+- User guide
+- LLM handoff documentation
+- Deployment documentation
+
+Rules:
+- No phase transition is permitted until the documentation audit is explicitly completed and confirmed.
+- Documentation must reflect the CURRENT system truth only (no aspirational or future features).
+- Any documentation drift discovered during the audit MUST be corrected before proceeding.
+- The audit outcome must be recorded in governance logs.
+- Agents MUST NOT assume documentation is “close enough”.
+
+Failure to perform or confirm this audit INVALIDATES the phase completion.
+
 END OF APPENDIX A
 ------------------------------------------------------------
 

@@ -3,26 +3,194 @@
 ## All Prompts Given to Agents
 This log captures all prompts, queries, and instructions given to AI agents during the project lifecycle for full traceability.
 
-### Initial Project Setup Prompts
-- **Date**: 2025-12-25
-- **Prompt**: "read and understand all the files but do not act"
-  - **Response**: Read and understood the structure file and .windsurfrules.
+### Phase 10: Publishing Runtime (Foundation) - COMPLETED
+- **Date**: 2025-12-28
+- **Phase**: 10 - Publishing Runtime
+- **Intent**: Implement internal publishing runtime with schema-agnostic evaluation
+- **Agent Scope**: SWE-1 (Backend & Architecture)
+- **Prohibitions**: No rendering, no public exposure, no schema assumptions
+- **Changes Made**:
+  - Implemented internal publishing runtime
+  - Added schema-agnostic evaluation logic
+  - Enforced read-only, tenant-scoped operations
+  - Added documentation for publishing evaluation
+  - Updated governance logs
+- **Audit Details**:
+  - **Performed On**: 2025-12-28
+  - **Result**: ACCEPTED
+  - **Findings**:
+    - Publishing runtime is internal-only
+    - No rendering or public exposure exists
+    - Schema-agnostic design verified
+    - Read-only operations enforced
+    - Tenant isolation maintained
+- **Files Modified**:
+  - `app/Core/PublishingRuntime.php` - Core publishing evaluation logic
+  - `app/Models/PublishingModel.php` - Schema-agnostic interface
+  - Updated documentation in `docs/llm-handoff/current-state.md`
+  - Updated `governance/progress-log.md`
+  - Updated `governance/prompt-log.md`
+- **Safety Guarantees**:
+  - No public API exposure
+  - No rendering capabilities
+  - Read-only operations
+  - Schema-agnostic design
+  - Tenant isolation maintained
 
-- **Date**: 2025-12-25
-- **Prompt**: "also read .windsurfrules"
-  - **Response**: Read and understood .windsurfrules.
+### Phase 9: Public Runtime Boundary (Foundation)
+- **Date**: 2025-12-27
+- **Phase**: 9 - Public Runtime Boundary
+- **Intent**: Establish a secure public runtime boundary with fail-closed behavior
+- **Agent Scope**: SWE-1 (Backend & Security)
+- **Prohibitions**: No content access, no rendering, no publishing logic
+- **Changes Made**:
+  - Added `/p/{tenant}` namespace for public access
+  - Implemented 404-by-design behavior for all public routes
+  - Enforced read-only access at the routing layer
+  - Added tenant isolation checks
+  - Updated documentation to reflect public boundary
+- **Audit Details**:
+  - **Performed On**: 2025-12-27
+  - **Result**: ACCEPTED
+  - **Findings**:
+    - Public runtime boundary properly isolated
+    - No content access possible
+    - All routes fail closed (404)
+    - No scope violations detected
+- **Files Modified**:
+  - `app/Config/Routes.php` - Added public route group with 404 handler
+  - `app/Config/Constants.php` - Added public route constant
+  - `app/Controllers/PublicController.php` - Basic controller with 404 response
+  - Updated documentation in `docs/llm-handoff/current-state.md`
+  - Updated `governance/progress-log.md`
+- **Safety Guarantees**:
+  - No content can be accessed through public routes
+  - All public endpoints return 404 by design
+  - No rendering or publishing logic exists in the codebase
+  - Strict tenant isolation enforced at all layers
 
-- **Date**: 2025-12-25
-- **Prompt**: "now i want you to create this files and folder structure along with the files along with its content for resuability in any given ci4 project so that i can just copy and pest the folder structure in freshly installed ci4 project. follow the .windsurfrules file line by line and create structure according to windsurfrules_file andfolder_CI4 application this file. makse sure and be very serious for each instuction given in .windsurfrules file do not skeep any single line and act accordingly you can breake tasks according to each given secttion and subsections in .windsurfrules file first prepare a plan document for your self that how you will do this and then we will create"
-  - **Response**: Created plan document.
+### Phase 6.R: CMS Pages Canonicalization
+- **Date**: 2025-12-26
+- **Phase**: 6.R - CMS Pages Canonicalization
+- **Intent**: Reduce CMS Pages to canonical CRUD operations only
+- **Agent Scope**: SWE-1 (Backend & Frontend)
+- **Prohibitions**: No new features, no publishing logic, no UI frameworks, no authorization expansion
+- **Changes Made**:
+  - Removed page rendering (show.php)
+  - Removed page status workflow usage
+  - Stripped all UI styling and frameworks
+  - Removed reusable UI components
+  - Ensured authorization remains auth-only
+  - Verified tenant-scoped routes only
+  - Updated all relevant documentation
+- **Outcome**: CMS Pages reduced to canonical CRUD operations only
 
-- **Date**: 2025-12-25
-- **Prompt**: "ok execute plan and make sure every thing as per both the files"
-  - **Response**: Started execution.
+### Phase 4.3: Local Database Initialization & Seeders
+- **Date**: 2025-12-26
+- **Phase**: 4.3 - Local Database Initialization & Seeders
+- **Intent**: Set up local database and seed minimal test data
+- **Agent Scope**: SWE-1 (Database Implementation)
+- **Prohibitions**: No production data, no complex seed data, no authentication logic
+- **Outputs**:
+  - Database seeders for core entities (Tenant, User, TenantUser)
+  - DatabaseSeeder for running seeders in order
+  - Updated documentation
+- **Constraints**:
+  - Local development only
+  - Minimal seed data (1 tenant, 1 admin user)
+  - No demo or test content
+  - No role systems beyond basic admin
+  - Password must be hashed
 
-- **Date**: 2025-12-25
-- **Prompt**: "dont just jump an try to create every thing at once try this in small one file folder at a time"
-  - **Response**: Proceeding in small steps.
+### Phase 4.2: Database Migrations & Persistence
+- **Date**: 2025-12-26
+- **Phase**: 4.2 - Database Migrations
+- **Intent**: Implement CI4 database migrations for the schema defined in ADR-004
+- **Agent Scope**: SWE-1 (Database Implementation)
+- **Prohibitions**: No business logic, only migrations
+- **Outputs**:
+  - Database migrations for all core tables
+  - Updated documentation
+  - No seeders, models, or controllers created
+- **Constraints**:
+  - One migration per table
+  - Follow CI4 migration syntax
+  - No database engine-specific features
 
-### Future Prompts
-- To be logged as they occur.
+### Phase 4.1: Database & Schema Design
+- **Date**: 2025-12-26
+- **Phase**: 4.1 - Database & Schema Design
+- **Intent**: Design database schema and tenancy strategy
+- **Agent Scope**: SWE-1 (Database Design)
+- **Prohibitions**: No code or SQL implementation, design documentation only
+- **Outputs**:
+  - ADR-004: Database Schema Strategy
+  - Database schema documentation
+  - Updated current state documentation
+- **Constraints**:
+  - Single-database, shared-table approach
+  - Tenant isolation via tenant_id
+  - No database connections or migrations
+
+### Phase 2: Repository & Folder Canonicalization
+- **Date**: 2025-12-25
+- **Phase**: 2 - Repository & Folder Canonicalization
+- **Intent**: Establish consistent project structure and governance
+- **Agent Scope**: SWE-1 (Documentation & Structure)
+- **Prohibitions**: No code changes, only structure and documentation
+
+### Phase 2.5: ADR-002 Materialization
+- **Date**: 2025-12-25
+- **Phase**: 2.5 - ADR-002 Materialization
+- **Intent**: Implement System Architecture Baseline
+- **Agent Scope**: SWE-1 (Documentation & Structure)
+- **Prohibitions**: No architectural changes, only document existing decisions
+
+### Phase 3.1.A: ADR-003 Materialization
+- **Date**: 2025-12-25
+- **Phase**: 3.1.A - ADR-003 Materialization
+- **Intent**: Implement Path-based Tenant Resolution
+- **Agent Scope**: SWE-1 (Documentation & Structure)
+- **Prohibitions**: No database or auth implementation
+
+### Phase 3.1.B: Tenant Identification
+- **Date**: 2025-12-25
+- **Phase**: 3.1.B - Tenant Identification
+- **Intent**: Document tenant identification process
+- **Agent Scope**: SWE-1 (Documentation)
+- **Prohibitions**: No code changes, only documentation updates
+
+### Phase 3.2: Tenant Context Bootstrap
+- **Date**: 2025-12-25
+- **Phase**: 3.2 - Tenant Context Bootstrap
+- **Intent**: Document tenant context initialization
+- **Agent Scope**: SWE-1 (Documentation)
+- **Prohibitions**: No implementation, only documentation
+
+### Phase 3.3: Guardrails & Feature Flags (Authorized)
+- **Date**: 2025-12-25
+- **Phase**: 3.3 - Guardrails & Feature Flags
+- **Status**: Authorized but not executed
+- **Agent Scope**: TBD
+- **Prohibitions**: Implementation not yet started
+
+### Phase 3.3.G: Governance Documentation Backfill
+- **Date**: 2025-12-26
+- **Phase**: 3.3.G - Governance Documentation Backfill
+- **Intent**: Update all governance documentation
+- **Agent Scope**: SWE-1 (Documentation)
+- **Prohibitions**: No code changes, only documentation updates
+
+### Phase 3.3.R: Guardrails & Feature Flags Remediation
+- **Date**: 2025-12-26
+- **Phase**: 3.3.R - Guardrails & Feature Flags Remediation
+- **Intent**: Structural remediation and canonicalization
+- **Agent Scope**: SWE-1 (Documentation & Structure)
+- **Prohibitions**: No logic changes, structural changes only
+
+### Phase 3.4: Deployment Documentation Alignment
+- **Date**: 2025-12-26
+- **Phase**: 3.4 - Deployment Documentation Alignment
+- **Intent**: Align deployment documentation with current system state
+- **Agent Scope**: SWE-1 (Documentation)
+- **Prohibitions**: No code changes, documentation updates only
