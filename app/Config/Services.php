@@ -2,6 +2,10 @@
 
 namespace Config;
 
+use App\Contracts\ReadOnlyPublishingRepositoryInterface;
+use App\Models\PublishableEntityModel;
+use App\Repositories\PublishableEntityRepository;
+use App\Services\PublishingRuntime;
 use CodeIgniter\Config\BaseService;
 
 /**
@@ -37,5 +41,27 @@ class Services extends BaseService
         }
 
         return new \App\Services\ContentPublishingService();
+    }
+    
+    /**
+     * Get the PublishingRuntime service
+     * 
+     * This provides read-only access to published content with strict tenant isolation.
+     * 
+     * @param bool $getShared Whether to return a shared instance
+     * @return PublishingRuntime
+     */
+    public static function publishingRuntime($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('publishingRuntime');
+        }
+        
+        // Create the repository with its dependencies
+        $model = new PublishableEntityModel();
+        $repository = new PublishableEntityRepository($model);
+        
+        // Return new PublishingRuntime instance with the repository
+        return new PublishingRuntime($repository);
     }
 }

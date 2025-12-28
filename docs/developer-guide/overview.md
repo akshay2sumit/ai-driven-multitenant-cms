@@ -7,7 +7,62 @@
 ## Introduction
 This guide is for developers working on the AI-Driven Multi-Tenant CMS. It documents the current implementation status, architecture, and development practices.
 
-## Current Implementation Status (Phase 11 - Documentation Audit Complete)
+## Current Implementation Status (Phase 13 - Publishing Schema Implementation)
+
+### Publishing Runtime (Phase 13 - Implementation Complete)
+
+#### Overview
+The PublishingRuntime provides secure, read-only access to published content with strict tenant isolation. It's designed to be used internally by other services and is not exposed to public routes.
+
+#### Key Features
+- **Read-Only Access**:
+  - Structured to prevent any write operations
+  - Interface-based architecture enforces read-only behavior
+  - No public API endpoints exposed
+
+- **Security Model**:
+  - **Tenant Isolation**: Strictly enforced at all access points
+  - **Fail-Closed**: Default deny on any error condition
+  - **No Public Exposure**: Internal use only, no public routes
+  - **Audit Logging**: All access attempts are logged
+
+- **Access Patterns**:
+  ```php
+  // Get the PublishingRuntime service
+  $publishingRuntime = \Config\Services::publishingRuntime();
+  
+  // Get a published entity
+  $entity = $publishingRuntime->getPublishedEntity('page', 123);
+  
+  // Check if an entity is published
+  $isPublished = $publishingRuntime->isEntityPublished('page', 123);
+  
+  // Get published state information
+  $state = $publishingRuntime->getPublishedState('page', 123);
+  ```
+
+#### Security Considerations
+1. **Tenant Context**:
+   - Tenant ID is required for all operations
+   - Cross-tenant access is strictly prohibited
+   - Tenant context is verified at multiple levels
+
+2. **Read-Only Guarantees**:
+   - Uses `ReadOnlyPublishingRepositoryInterface`
+   - No write operations exposed through the interface
+   - Immutable data structures used where possible
+
+3. **Error Handling**:
+   - All errors result in safe defaults
+   - No internal system details are exposed
+   - Comprehensive logging of security-relevant events
+
+4. **Performance**:
+   - Optimized for read operations
+   - No expensive joins or complex queries
+   - Caching can be implemented at the service level if needed
+
+### Public Runtime
 - **Public Runtime**: Boundary established (fail-closed)
   - `/p/{tenant}` namespace exists but returns 404
   - Read-only access enforced
@@ -15,12 +70,12 @@ This guide is for developers working on the AI-Driven Multi-Tenant CMS. It docum
   - No content access or rendering implemented
   - Strict tenant isolation maintained
 
-- **CMS Pages**: Basic CRUD operations only
-  - No publishing workflow implemented
+- **CMS Pages**: Basic CRUD operations with publishing workflow
+  - Publishing workflow implemented (draft → review → published)
+  - Versioning and history tracking
+  - State management (draft, review, published, archived, retracted)
+  - All operations tenant-scoped and audited
   - No public rendering implemented
-  - No versioning or history
-  - No media uploads
-  - All operations tenant-scoped
 
 - **Tenancy**: Path-based resolution with strict isolation
   - `/t/{tenant_identifier}/...` for admin
@@ -78,6 +133,32 @@ This guide is for developers working on the AI-Driven Multi-Tenant CMS. It docum
   - ADR-005: Publishing & Visibility (Design Complete)
   - ADR-006: Public Rendering Strategy (Design Complete)
   - Phase 11: Documentation Audit Complete
+
+## Publishing Model (Phase 12 - Design Only)
+
+### Conceptual Overview
+The publishing model defines how content moves through different states in its lifecycle. This is currently in the design phase only.
+
+### Key Concepts
+- **Publishable Content**: Content entities that support the full publishing workflow
+- **Lifecycle States**:
+  - Draft → Review → Published → Archived/Retracted
+  - Each state has specific access controls and behaviors
+- **PublishingRuntime**: Future read-only interface for published content
+
+### Design-Only Status
+- **NO** schema changes in this phase
+- **NO** implementation of publishing workflows
+- **NO** UI components for state management
+- **NO** API endpoints for state transitions
+
+### Future Integration
+- The same published content will be consumed by:
+  - Website frontend
+  - Mobile applications (Android/iOS)
+  - Public APIs (future phase)
+- All platforms will use the same content source
+- Content will be rendered appropriately for each platform
 
 ## Development Setup
 1. **Prerequisites**:
