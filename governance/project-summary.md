@@ -29,12 +29,14 @@ The defining characteristic of this project is governance-first development. Arc
 
 The CMS is expected to evolve over time, but only through approved architectural changes, not ad-hoc coding.
 
-## Current Status (Phase 11 - Documentation Audit Complete)
+## Current Status (Phase 14 - Documentation Audit Completed & Audited)
 - CodeIgniter 4 (v4.6.4) with multi-tenant architecture
 - Governance framework active (.windsurfrules v1.3.3 LTS)
 - Core tenant resolution implemented (ADR-003)
 - CMS Pages module (CRUD operations, non-public)
-- Documentation audit completed for all artifacts
+- AuthoringService implemented with role-based permissions
+- PublishingRuntime implemented (read-only, tenant-isolated)
+- Documentation audit completed and audited for all artifacts
 - Public runtime boundary established (404-by-design)
 - No publishing/visibility features implemented
 - No public content rendering implemented
@@ -49,8 +51,8 @@ The CMS is expected to evolve over time, but only through approved architectural
   - Backup/recovery not applicable (no data layer)
   - Public runtime is fail-closed by design
 
-## Compliance Status (Phase 11)
-- [x] Documentation audit completed for all artifacts
+## Compliance Status (Phase 14)
+- [x] Documentation audit completed and audited for all artifacts
 - [x] Public runtime properly documented as fail-closed
 - [x] No publishing schema or workflow exists
 - [x] No public UI or rendering surface implemented
@@ -60,3 +62,6 @@ The CMS is expected to evolve over time, but only through approved architectural
 - [x] Clear separation between implemented and planned features
 - [x] All documentation reflects current system state only
 - [x] Deployment and operations properly documented as deferred
+- [x] AuthoringService role-based permissions documented
+- [x] Service boundaries and responsibilities clarified
+- [x] Explicit documentation of deferred features

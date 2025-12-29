@@ -8,10 +8,38 @@ use App\Tenant\Context as TenantContext;
 use InvalidArgumentException;
 use RuntimeException;
 
+/**
+ * PublishableEntityRepository
+ * 
+ * Handles the business logic for managing publishable entities including
+ * creating drafts, submitting for review, publishing, archiving, and retracting.
+ * 
+ * This repository enforces tenant isolation and implements proper state transitions
+ * for the entity lifecycle.
+ */
 class PublishableEntityRepository implements ReadOnlyPublishingRepositoryInterface
 {
+    /*
+     * SECURITY NOTE:
+     * - This repository assumes the caller has already performed all necessary
+     *   authorization checks.
+     * - Role and permission enforcement will be implemented in a dedicated
+     *   authorization layer in a future phase.
+     * - All methods enforce tenant isolation to prevent cross-tenant data access.
+     * 
+     * TODO: Implement comprehensive authorization checks in a dedicated layer
+     * TODO: Add audit logging for all state transitions
+     */
+    /**
+     * @var PublishableEntityModel
+     */
     protected $model;
     
+    /**
+     * Constructor
+     * 
+     * @param PublishableEntityModel $model
+     */
     public function __construct(PublishableEntityModel $model)
     {
         $this->model = $model;
@@ -19,6 +47,13 @@ class PublishableEntityRepository implements ReadOnlyPublishingRepositoryInterfa
     
     /**
      * Create a new draft version of an entity
+     * 
+     * @param string $entityType The type of entity
+     * @param int $entityId The ID of the entity
+     * @param array $data The entity data
+     * @param int|null $createdBy The ID of the user creating the draft
+     * @return array The created draft entity
+     * @throws RuntimeException If draft creation fails
      */
     public function createDraft(
         string $entityType,
@@ -45,6 +80,11 @@ class PublishableEntityRepository implements ReadOnlyPublishingRepositoryInterfa
     
     /**
      * Submit a draft for review
+     * 
+     * @param int $entityId The ID of the entity to submit for review
+     * @param int|null $submittedBy The ID of the user submitting for review
+     * @return array The updated entity
+     * @throws InvalidArgumentException If the entity is not in draft state
      */
     public function submitForReview(int $entityId, ?int $submittedBy = null): array
     {
@@ -65,6 +105,11 @@ class PublishableEntityRepository implements ReadOnlyPublishingRepositoryInterfa
     
     /**
      * Publish a reviewed entity
+     * 
+     * @param int $entityId The ID of the entity to publish
+     * @param int|null $publishedBy The ID of the user publishing the entity
+     * @return array The published entity
+     * @throws InvalidArgumentException If the entity is not in review state
      */
     public function publish(int $entityId, ?int $publishedBy = null): array
     {
@@ -85,6 +130,11 @@ class PublishableEntityRepository implements ReadOnlyPublishingRepositoryInterfa
     
     /**
      * Archive a published entity
+     * 
+     * @param int $entityId The ID of the entity to archive
+     * @param int|null $archivedBy The ID of the user archiving the entity
+     * @return array The archived entity
+     * @throws InvalidArgumentException If the entity is not in published state
      */
     public function archive(int $entityId, ?int $archivedBy = null): array
     {
@@ -105,6 +155,11 @@ class PublishableEntityRepository implements ReadOnlyPublishingRepositoryInterfa
     
     /**
      * Retract a published entity
+     * 
+     * @param int $entityId The ID of the entity to retract
+     * @param int|null $retractedBy The ID of the user retracting the entity
+     * @return array The retracted entity
+     * @throws InvalidArgumentException If the entity is not in published state
      */
     public function retract(int $entityId, ?int $retractedBy = null): array
     {
@@ -124,7 +179,14 @@ class PublishableEntityRepository implements ReadOnlyPublishingRepositoryInterfa
     }
     
     /**
-     * Get entity by ID with tenant isolation
+     * Get a specific version of an entity by its ID with tenant isolation
+     * 
+     * Note: This retrieves a specific version of an entity, not the logical entity.
+     * To get the latest version of an entity, use the appropriate getter method.
+     * 
+     * @param int $id The version-specific ID of the entity to retrieve
+     * @return array The entity data
+     * @throws InvalidArgumentException If the entity is not found or access is denied
      */
     public function getById(int $id): array
     {
@@ -173,7 +235,7 @@ class PublishableEntityRepository implements ReadOnlyPublishingRepositoryInterfa
                 ->where('entity_type', $entityType)
                 ->where('entity_id', $entityId)
                 ->where('tenant_id', $tenantId)  // Enforce tenant isolation
-                ->where('state', 'published')    // Only return published content
+                ->where('state', PublishableEntityModel::STATE_PUBLISHED)
                 ->orderBy('version', 'DESC')     // Get the latest version
                 ->first();
         } catch (\Exception $e) {
@@ -193,54 +255,151 @@ class PublishableEntityRepository implements ReadOnlyPublishingRepositoryInterfa
     
     /**
      * Get the current draft version of an entity
+     * 
+     * @param string $entityType The type of entity
+     * @param int $entityId The ID of the entity
+     * @return array|null The draft entity or null if not found
+     * @throws InvalidArgumentException If entity is not found or access denied
      */
     public function getDraftVersion(string $entityType, int $entityId): ?array
     {
-        $versions = $this->model
-            ->where('entity_type', $entityType)
-            ->where('entity_id', $entityId)
-            ->where('state', PublishableEntityModel::STATE_DRAFT)
-            ->orderBy('version', 'DESC')
-            ->findAll(1);
+        try {
+            $tenantId = TenantContext::require();
             
-        return $versions[0] ?? null;
+            return $this->model
+                ->where('entity_type', $entityType)
+                ->where('entity_id', $entityId)
+                ->where('tenant_id', $tenantId)
+                ->where('state', PublishableEntityModel::STATE_DRAFT)
+                ->orderBy('version', 'DESC')
+                ->first();
+        } catch (\Exception $e) {
+            log_message('error', sprintf(
+                'Failed to fetch draft version for entity [%s:%d]: %s',
+                $entityType,
+                $entityId,
+                $e->getMessage()
+            ));
+            
+            throw new \RuntimeException('Failed to fetch draft version');
+        }
     }
     
     /**
-     * List all versions of an entity
+     * Get all versions of an entity
+     * 
+     * @param string $entityType The type of entity
+     * @param int $entityId The ID of the entity
+     * @return array The versions of the entity
+     * @throws \RuntimeException If the query fails
      */
-    public function listVersions(string $entityType, int $entityId): array
+    public function getVersions(string $entityType, int $entityId): array
     {
-        return $this->model
-            ->where('entity_type', $entityType)
-            ->where('entity_id', $entityId)
-            ->orderBy('version', 'DESC')
-            ->findAll();
+        try {
+            $tenantId = TenantContext::require();
+            
+            return $this->model
+                ->where('entity_type', $entityType)
+                ->where('entity_id', $entityId)
+                ->where('tenant_id', $tenantId)
+                ->orderBy('version', 'ASC')
+                ->findAll();
+        } catch (\Exception $e) {
+            log_message('error', sprintf(
+                'Failed to list versions for entity [%s:%d]: %s',
+                $entityType,
+                $entityId,
+                $e->getMessage()
+            ));
+            
+            throw new \RuntimeException('Failed to list versions');
+        }
     }
     
     /**
-     * Check if an entity is published
+     * Check if an entity has a published version
+     * 
+     * @param string $entityType The type of entity
+     * @param int $entityId The ID of the entity
+     * @return bool True if the entity has a published version, false otherwise
      */
     public function isPublished(string $entityType, int $entityId): bool
     {
-        return $this->model->isPublished($entityType, $entityId);
+        try {
+            $tenantId = TenantContext::require();
+            
+            $count = $this->model
+                ->where('entity_type', $entityType)
+                ->where('entity_id', $entityId)
+                ->where('tenant_id', $tenantId)
+                ->where('state', PublishableEntityModel::STATE_PUBLISHED)
+                ->countAllResults();
+                
+            return $count > 0;
+        } catch (\Exception $e) {
+            log_message('error', sprintf(
+                'Failed to check published status for entity [%s:%d]: %s',
+                $entityType,
+                $entityId,
+                $e->getMessage()
+            ));
+            
+            return false;
+        }
     }
     
     /**
      * Get the current state of an entity
+     * 
+     * @param string $entityType The type of entity
+     * @param int $entityId The ID of the entity
+     * @return string|null The current state or null if not found
      */
     public function getCurrentState(string $entityType, int $entityId): ?string
     {
-        return $this->model->getCurrentState($entityType, $entityId);
+        try {
+            $tenantId = TenantContext::require();
+            
+            $entity = $this->model
+                ->where('entity_type', $entityType)
+                ->where('entity_id', $entityId)
+                ->where('tenant_id', $tenantId)
+                ->orderBy('version', 'DESC')
+                ->first();
+                
+            return $entity ? $entity['state'] : null;
+        } catch (\Exception $e) {
+            log_message('error', sprintf(
+                'Failed to get current state for entity [%s:%d]: %s',
+                $entityType,
+                $entityId,
+                $e->getMessage()
+            ));
+            
+            throw new \RuntimeException('Failed to get current state');
+        }
     }
     
     /**
-     * Soft delete all versions of an entity
+     * Delete an entity and all its versions
+     * 
+     * @param string $entityType The type of entity
+     * @param int $entityId The ID of the entity to delete
+     * @return never
+     * @throws \RuntimeException Always throws as deletion is not yet implemented
+     * 
+     * @todo Implement entity deletion in a future phase with proper authorization
+     * @todo Add comprehensive audit logging for deletion operations
+     * @todo Consider implementing soft-delete with retention period
      */
     public function deleteEntity(string $entityType, int $entityId): bool
     {
-        return $this->model->deleteEntity($entityType, $entityId);
-    }
-
+        throw new \RuntimeException(
+            'Entity deletion is not yet implemented. ' .
+            'This feature will be added in a future phase with proper authorization and audit logging.'
+        );
         
+        // Future implementation will go here with proper authorization checks
+        // and audit logging as per security requirements.
+    }
 }
