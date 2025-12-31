@@ -943,6 +943,7 @@ Rules:
 Failure to perform or confirm this audit INVALIDATES the phase completion.
 - A phase is NOT considered closed unless a portable snapshot artifact of the repository state is generated AFTER the authoritative Git push.
 
+- A phase is NOT considered closed unless docs/llm-handoff/current-state.md is updated and included in the SAME commit as phase artifacts. Absence of this update INVALIDATES phase completion.
 - Project governance rules may derive from the generic governance constitution.
 END OF APPENDIX A
 ------------------------------------------------------------

@@ -253,6 +253,9 @@ Documentation must be current with project implementation. Outdated documentatio
 ### Documentation Accessibility
 Documentation must be accessible to all authorized personnel and appropriately secured against unauthorized access.
 
+### State Synchronization Requirement
+Phase closure REQUIRES synchronization of docs/llm-handoff/current-state.md with actual completed phase. Absence of this synchronization INVALIDATES phase completion.
+
 ---
 
 **Authority**: This taxonomy defines the complete and authoritative requirements for project documentation. All projects must comply with these requirements unless explicitly exempted by governance authority.
