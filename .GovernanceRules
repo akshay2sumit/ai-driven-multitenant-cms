@@ -1,0 +1,169 @@
+# Generic Governance Constitution
+
+## Preamble
+
+This constitution establishes universal governance principles that transcend specific projects, technologies, or organizational contexts. It serves as the foundational authority from which project-specific governance rules derive their legitimacy.
+
+## Governance Supremacy
+
+### Principle Statement
+Governance frameworks override all other system considerations, including convenience, performance, or feature delivery.
+
+### Core Requirements
+- All architectural decisions must align with governance requirements
+- Security and compliance considerations are non-negotiable
+- Governance frameworks must be documented, accessible, and enforceable
+- No exceptions to governance rules may be made without explicit, documented approval
+
+### Enforcement Mechanisms
+- Regular audits and compliance verification are mandatory
+- Violations of governance principles must be documented and addressed
+- Governance authority maintains veto power over all technical decisions
+
+## Phase Discipline
+
+### Phase Definition
+Work must be organized into discrete, bounded phases with clear entry and exit criteria.
+
+### Phase Requirements
+- Each phase must have explicitly defined scope and objectives
+- Phase completion requires documented verification of all requirements
+- No phase may be considered complete without meeting all exit criteria
+- Phase boundaries must be respected and documented
+
+### Phase Closure Protocol
+- All deliverables must be complete and verified
+- Documentation must be current and accurate
+- Audit trails must be complete and accessible
+- Repository state must be captured in portable artifact form
+
+## Artifact & Audit Discipline
+
+### Artifact Requirements
+- All work must produce documented, verifiable artifacts
+- Artifacts must be complete, accurate, and accessible
+- Changes to artifacts must be tracked and justified
+- Artifact integrity must be verifiable at any time
+
+### Audit Requirements
+- Comprehensive audits must be performed at phase boundaries
+- Audit results must be documented and retained
+- Failed audits must be addressed before phase completion
+- Audit trails must be complete and immutable
+
+### Record Keeping
+- All decisions must be documented with rationale
+- Changes must be traceable to specific decisions
+- Historical records must be preserved and accessible
+- Records must be sufficient for complete reconstruction
+
+## Agent & Role Boundaries
+
+### Role Definition
+All participants must operate within explicitly defined role boundaries and authority limits.
+
+### Authority Limits
+- No agent may exceed their defined authority without explicit approval
+- Role boundaries must be documented and enforced
+- Authority delegation must be explicit and documented
+- Violations of role boundaries must be documented and addressed
+
+### Responsibility Requirements
+- All agents must understand and respect their role boundaries
+- Responsibility must be clearly assigned and acknowledged
+- Accountability must be enforced for all actions
+- No agent may operate without defined responsibility
+
+## Session / Context Discipline
+
+### Session Management
+- Work sessions must be properly initiated and terminated
+- Session context must be maintained and documented
+- Session boundaries must be respected and enforced
+- Session state must be preserved and recoverable
+
+### Context Integrity
+- Context must be complete and accurate for all work
+- Context changes must be documented and justified
+- Context loss must be prevented and detected
+- Context recovery must be possible and documented
+
+### Communication Requirements
+- All communications must be documented and preserved
+- Communication protocols must be defined and followed
+- Communication loss must be detected and addressed
+- Communication records must be complete and accessible
+
+## Technology Neutrality
+
+### Principle Statement
+Governance principles must remain independent of specific technologies, frameworks, or platforms.
+
+### Technology Requirements
+- Governance rules must apply regardless of technology choices
+- Technology changes must not compromise governance integrity
+- Governance frameworks must be adaptable to technological evolution
+- Technology-specific rules must derive from generic principles
+
+### Adaptation Requirements
+- Governance frameworks must be portable across contexts
+- Principles must be applicable regardless of implementation details
+- Rules must be interpretable without technical expertise
+- Governance must survive technological change
+
+## Constitutional Authority
+
+### Hierarchy of Authority
+1. This constitution provides the foundational authority
+2. Project-specific rules derive legitimacy from this constitution
+3. Implementation details must conform to constitutional principles
+4. Exceptions must be documented and justified
+
+### Amendment Process
+- Constitutional amendments require explicit documentation
+- Amendments must maintain consistency with existing principles
+- Amendment rationale must be preserved and accessible
+- Amendments must not compromise governance integrity
+
+### Interpretation Guidelines
+- Principles must be interpreted in context of their purpose
+- Interpretations must prioritize governance integrity
+- Ambiguities must be resolved in favor of stronger governance
+- Interpretations must be documented and consistent
+
+## Universal Applicability
+
+### Scope
+This constitution applies to all projects, regardless of:
+- Technology stack or implementation choices
+- Organizational structure or context
+- Scale or complexity of the endeavor
+- Temporal or geographical considerations
+
+### Non-Derogation
+- No project rules may contradict constitutional principles
+- No circumstances may justify constitutional violations
+- No agreements may override constitutional authority
+- No exceptions may compromise constitutional integrity
+
+## Enforcement and Compliance
+
+### Compliance Requirements
+- All participants must understand and comply with constitutional principles
+- Compliance must be verifiable and demonstrable
+- Non-compliance must be documented and addressed
+- Compliance records must be complete and accessible
+
+### Enforcement Mechanisms
+- Constitutional violations must be detected and documented
+- Enforcement actions must be consistent and proportionate
+- Enforcement records must be complete and preserved
+- Enforcement authority must be clearly defined and exercised
+
+---
+
+**Authority**: This constitution represents the universal foundation for all governance frameworks. Project-specific rules must derive their authority from these principles and must not contradict them.
+
+**Longevity**: These principles are designed to be timeless and applicable regardless of technological or organizational evolution.
+
+**Universality**: This constitution applies to all contexts where governance is required, regardless of scale, complexity, or domain.

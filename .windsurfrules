@@ -941,7 +941,9 @@ Rules:
 - Agents MUST NOT assume documentation is “close enough”.
 
 Failure to perform or confirm this audit INVALIDATES the phase completion.
+- A phase is NOT considered closed unless a portable snapshot artifact of the repository state is generated AFTER the authoritative Git push.
 
+- Project governance rules may derive from the generic governance constitution.
 END OF APPENDIX A
 ------------------------------------------------------------
 
