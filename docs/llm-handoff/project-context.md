@@ -23,3 +23,6 @@ See ADRs.
 
 ## Risks
 AI dependencies, multi-tenancy complexity.
+
+## Architectural Intent
+Architectural intent is defined in docs/architecture/architectural-intent.md and is authoritative.

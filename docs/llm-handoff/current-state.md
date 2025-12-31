@@ -319,3 +319,6 @@
 - No future development is planned
 5. AI integration planning
 6. Testing framework setup
+
+## Architectural Intent
+Architectural intent is defined in docs/architecture/architectural-intent.md and is authoritative.

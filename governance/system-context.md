@@ -148,3 +148,6 @@ AI may assist, but must never silently decide or mutate system behavior.
 4. Follow docs/developer-guide/setup.md for development
 
 This context enables seamless continuation across chats/agents.
+
+## Architectural Intent
+Architectural intent is defined in docs/architecture/architectural-intent.md and is authoritative.
