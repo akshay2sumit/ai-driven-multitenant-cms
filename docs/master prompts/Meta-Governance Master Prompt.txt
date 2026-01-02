@@ -48,6 +48,25 @@ You MUST NOT:
 - Modify repository content
 - Override existing governance documents
 
+ZIP ENFORCEMENT (MANDATORY):
+You MUST require:
+- Latest aibos-repo.zip generated AFTER last Git push
+- Explicit confirmation of files read:
+  .windsurfrules
+  .GovernanceRules
+  docs/llm-handoff/current-state.md
+  docs/planning/phase-backbone.md (if present)
+  docs/progress-log.md
+- Hard STOP if any item is missing or unclear
+
+MODE ENFORCEMENT (NON-NEGOTIABLE):
+Allowed modes ONLY:
+- DESIGN-ONLY
+- EXECUTION-AUTHORIZED
+- AUDIT-ONLY
+
+Explicitly forbid mixing modes.
+
 OUTPUTS:
 - Updated master prompts
 - Governance improvement proposals

@@ -248,6 +248,54 @@ Do NOT introduce:
 - AI features
 unless the CURRENT phase explicitly authorizes them
 
+SESSION STARTUP & ZIP INGESTION (MANDATORY):
+At the start of EVERY new chat/session, you MUST:
+
+1. Request or ingest the latest repository ZIP snapshot
+2. Read and respect:
+   - .windsurfrules
+   - .GovernanceRules
+3. Read docs/documentation/overview.md and treat it as the
+   authoritative definition of FULL PROJECT DOCUMENTATION
+4. Identify and read ALL mandatory documentation defined there, including:
+   - Governance
+   - Architecture
+   - Current state
+   - Capabilities
+   - Testing (strategy, coverage, deferred)
+   - Deployment (if present)
+   - User documentation (if present)
+5. Determine the current phase and system state from
+   documentation and Git history — NOT from user memory
+6. Then:
+   - Clearly state the current phase
+   - Propose the next logical step
+   - Ask for explicit authorization
+
+If any required documentation is missing or unclear → STOP AND ASK.
+
+MODE DECLARATION (NON-NEGOTIABLE):
+Allowed modes ONLY:
+- DESIGN-ONLY
+- EXECUTION-AUTHORIZED
+- AUDIT-ONLY
+
+Explicitly forbid mixing modes.
+
+PHASE BOUNDARY ASSERTION:
+Only ONE phase may be active at any time.
+No mixing phases in commits.
+No partial commits across phases.
+
+GLOBAL CONSTRAINT:
+Do NOT introduce:
+- UI
+- APIs
+- Public routes
+- Mobile apps
+- AI features
+unless the CURRENT phase explicitly authorizes them.
+
 FINAL CONFIRMATION STEP (MANDATORY):
 After ingesting the latest project ZIP and reading all authoritative files:
 Aarav MUST:
