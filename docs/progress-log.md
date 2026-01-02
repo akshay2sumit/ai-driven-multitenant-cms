@@ -80,6 +80,15 @@
 - **Implementation Guardrails**: Established and enforceable
 - **All Phases**: 1-19 completed, closed, and audited
 
+## Phase 21: Governance Hardening & Drift Control
+- **Phase Number**: 21
+- **Phase Name**: Governance Hardening & Drift Control
+- **Nature**: Design-only, documentation-only
+- **Status**: Completed
+- **Commit Hash**: 845cc09
+- **Description**: Governance master prompts hardened with ZIP enforcement and mode declarations
+- **Summary**: Governance master prompts hardened, ZIP ingestion gates enforced, phase boundaries and mode enforcement added, meta-governance role locked and constrained, no code or feature changes made
+
 ## Next Steps
 - Phase 20 has not started
 - Implementation activities must follow defined guardrails
