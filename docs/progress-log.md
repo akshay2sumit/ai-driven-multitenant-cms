@@ -131,6 +131,13 @@
 - **Status**: Completed
 - **Summary**: Event taxonomy defined, state vs event semantics locked, audit semantics and evidence rules established, failure, ordering, and ambiguity rules enforced, no code or schema changes made
 
+## Phase 28: Runtime Boundaries & Execution Context Semantics
+- **Phase Number**: 28
+- **Phase Name**: Runtime Boundaries & Execution Context Semantics
+- **Nature**: Design-only
+- **Status**: Completed
+- **Summary**: Runtime contexts defined, boundary enforcement rules documented, context transitions established, failure and ambiguity handling patterns created, documentation created and audit passed, phase now closed
+
 ## Next Steps
 - Phase 20 has not started
 - Implementation activities must follow defined guardrails
