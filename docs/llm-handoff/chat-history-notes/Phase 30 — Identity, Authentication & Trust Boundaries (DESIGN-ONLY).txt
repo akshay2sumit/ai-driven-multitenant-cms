@@ -1,0 +1,940 @@
+Phase 30 — Identity, Authentication & Trust Boundaries (DESIGN-ONLY)
+
+📐 PHASE 30 — STEP 1
+Identity Taxonomy & Trust Foundations (DESIGN)
+🔒 CORE IDENTITY PRINCIPLE (LOCKED)
+
+Identity is a claim; trust is earned through verification.
+
+Identity ≠ permission
+
+Identity ≠ role
+
+Identity ≠ capability
+
+Identity sirf ye batata hai: “tum kaun ho”
+Permissions baad me evaluate hote hain (Phase 29).
+
+🧱 IDENTITY DEFINITIONS (AUTHORITATIVE)
+1️⃣ Identity
+
+A stable, unique representation of an actor that can make requests to the system.
+
+Rules:
+
+Identity MUST be uniquely identifiable
+
+Identity MUST be tenant-bound (unless explicitly system-global)
+
+Identity alone grants ZERO authority
+
+2️⃣ Identity Types (TAXONOMY)
+a) Human Identity
+
+Represents a real person
+
+Origin: external (user-provided)
+
+Trust: low by default
+
+Examples (conceptual only):
+
+Tenant admin
+
+Editor
+
+Viewer
+
+b) System Identity
+
+Represents an internal system process
+
+Origin: internal
+
+Trust: scoped and narrow
+
+Rules:
+
+Never human-assignable
+
+Capabilities strictly limited
+
+Always tenant-aware unless explicitly global
+
+c) Service Identity
+
+Represents an external service or integration
+
+Origin: external system
+
+Trust: explicitly negotiated
+
+Rules:
+
+Must be explicitly registered
+
+No implicit trust
+
+Least-privilege only
+
+d) Future AI Operator Identity (CONTROLLED)
+
+Represents AI acting on behalf of humans
+
+Trust: never autonomous
+
+Authority always delegated and auditable
+
+❌ AI identities can never self-authenticate
+❌ AI identities can never self-grant capabilities
+
+🧭 TRUST LEVELS (SEMANTIC)
+
+Trust is not binary. It is classified.
+
+Trust Level 0 — Untrusted
+
+Identity claim exists
+
+No verification
+
+No access allowed
+
+Trust Level 1 — Authenticated
+
+Identity claim verified
+
+Still no permission granted automatically
+
+Trust Level 2 — Verified (Contextual)
+
+Identity verified
+
+Bound to tenant
+
+Eligible for permission evaluation (Phase 29)
+
+Trust Level 3 — System-Trusted
+
+Internal system identities
+
+Narrow, deterministic scope
+
+No business discretion
+
+🚫 EXPLICIT NON-GOALS (LOCKED)
+
+❌ No “logged-in user = trusted user” assumption
+
+❌ No identity = role conflation
+
+❌ No cross-tenant identity reuse
+
+❌ No permanent trust elevation
+
+🔐 FAIL-CLOSED IDENTITY RULE
+
+If identity or trust level cannot be established → DENY EVERYTHING.
+
+No partial access. No fallback.
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Planned Phase 30 docs (to be finalized later):
+
+docs/architecture/identity-model.md
+
+docs/architecture/trust-boundaries.md
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No login flows
+
+No auth providers
+
+No token formats
+
+No SWE-1
+
+🧭 PHASE 30 — STEP 2
+Authentication Semantics vs Authorization (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Clear karenge ki authentication aur authorization ka role alag-alag kya hai — aur system inko kab, kaise use karta hai.
+
+Kyun zaroori:
+Security bugs ka sabse bada source hota hai:
+
+“Login ho gaya matlab sab allowed hai”
+
+Ye step isi galat assumption ko root se khatam karta hai.
+
+Kya bilkul mana hai:
+Login flows, password rules, OAuth/JWT details, ya code.
+
+🔒 CORE SEPARATION PRINCIPLE (LOCKED)
+
+Authentication proves identity.
+Authorization decides permission.
+
+Authentication = Who are you?
+
+Authorization = Are you allowed to do this?
+
+In dono ko kabhi mix nahi kiya jaata.
+
+🧱 AUTHENTICATION — SEMANTICS ONLY
+What Authentication DOES
+
+Verifies an identity claim
+
+Establishes a trust level
+
+Binds identity to:
+
+Tenant
+
+Session / request context (conceptually)
+
+What Authentication DOES NOT DO
+
+❌ Grant roles
+
+❌ Grant capabilities
+
+❌ Decide permissions
+
+❌ Bypass context rules (Phase 28)
+
+Authentication ka output sirf ek cheez hoti hai:
+
+“This identity is verified at trust level X.”
+
+🧱 AUTHORIZATION — SEMANTICS ONLY
+
+Authorization happens after authentication, and only if:
+
+Identity trust level ≥ required minimum
+
+Tenant binding is valid
+
+Authorization evaluates:
+
+Capability (Phase 29)
+
+Execution context (Phase 28)
+
+Resource state
+
+Tenant scope
+
+Authentication ka result sirf input hota hai, decision nahi.
+
+🧭 AUTHENTICATION STATES (DESIGN)
+
+Authentication produces one of these states:
+
+State A — Unauthenticated
+
+Identity claim not verified
+
+Trust level 0
+
+All actions denied
+
+State B — Authenticated
+
+Identity verified
+
+Trust level 1
+
+Still no permission implied
+
+State C — Verified & Bound
+
+Identity verified
+
+Tenant binding confirmed
+
+Eligible for authorization evaluation
+
+State D — System-Trusted
+
+Internal system identity
+
+Narrow, predefined trust
+
+Authorization still applies
+
+🚫 EXPLICITLY FORBIDDEN COUPLING
+
+These are never allowed:
+
+❌ “Authenticated = allowed”
+
+❌ “Admin login bypasses authorization”
+
+❌ “Trusted service skips permission checks”
+
+❌ “Internal user has implicit power”
+
+Every request, regardless of who, goes through:
+
+Authorization check or DENY
+
+🔐 FAIL-CLOSED AUTHENTICATION RULES
+
+Missing authentication → deny
+
+Ambiguous authentication → deny
+
+Partial authentication → deny
+
+Cross-tenant authentication → deny
+
+Authentication failure never degrades gracefully.
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Authentication must emit:
+
+Identity ID
+
+Trust level
+
+Tenant binding
+
+Authentication outcome (success/failure)
+
+Authorization logs reference authentication result, but do not duplicate it.
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 30 docs impacted (to be created later):
+
+docs/architecture/identity-model.md
+
+docs/architecture/authentication-semantics.md
+
+Cross-refs to Phase 29 permission semantics
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No MFA discussion
+
+No token expiry logic
+
+No session storage
+
+No SWE-1
+
+🧭 PHASE 30 — STEP 3
+Trust Boundaries & Attack Surface Definition (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge system ke andar aur bahar ke trust boundaries, aur yeh ki kaun si jagah par system default trust nahi karta.
+
+Kyun zaroori:
+Most security failures boundary par hote hain —
+jab system galat jagah trust kar leta hai.
+
+Golden rule:
+
+Trust boundaries are where assumptions go to die.
+
+Kya bilkul mana hai:
+Implicit trust, “internal hai to safe hoga”, ya UI-based trust.
+
+🔒 CORE TRUST PRINCIPLE (LOCKED)
+
+Nothing crossing a boundary is trusted by default.
+
+External → Internal ❌ trusted
+
+Public → Authenticated ❌ trusted
+
+Authenticated → Authorized ❌ trusted
+
+Internal → Governance ❌ trusted
+
+Trust must be explicitly earned and re-validated.
+
+🧱 TRUST BOUNDARY TAXONOMY (AUTHORITATIVE)
+1️⃣ External Boundary
+
+Definition:
+Anything originating outside the system’s control.
+
+Examples:
+
+Browsers
+
+Mobile apps
+
+Third-party services
+
+Webhooks
+
+Rules:
+
+Zero trust by default
+
+Authentication required
+
+Input considered hostile
+
+2️⃣ Public Runtime Boundary
+
+Definition:
+Unauthenticated public access paths.
+
+Examples:
+
+Public content delivery
+
+Public APIs (read-only)
+
+Rules:
+
+Read-only by design
+
+No identity assumptions
+
+No session trust
+
+No capability evaluation until identity exists
+
+3️⃣ Authenticated Boundary
+
+Definition:
+After identity verification, before authorization.
+
+Rules:
+
+Authentication success ≠ authorization
+
+Tenant binding required
+
+Authorization always evaluated
+
+4️⃣ Internal System Boundary
+
+Definition:
+System-to-system or background execution.
+
+Rules:
+
+Narrow trust scope
+
+No implicit human equivalence
+
+Explicit capability assignment
+
+Tenant-aware unless globally justified
+
+5️⃣ Governance Boundary
+
+Definition:
+Audit, policy, and enforcement layer.
+
+Rules:
+
+Observational by default
+
+Deny-only enforcement allowed
+
+No business mutation
+
+No trust inheritance
+
+🎯 ATTACK SURFACE CATEGORIES (DESIGN)
+A) Identity Spoofing
+
+Fake identity claims
+
+Replay of credentials
+
+Mitigation (semantic):
+
+Identity ≠ trust
+
+Authentication required before authorization
+
+B) Boundary Confusion
+
+Treating internal calls as trusted
+
+Treating UI as authority
+
+Mitigation:
+
+Boundary-specific rules
+
+Explicit context declaration (Phase 28)
+
+C) Privilege Escalation
+
+Gaining higher access post-authentication
+
+Mitigation:
+
+Capability-based authorization (Phase 29)
+
+No positive overrides
+
+D) Cross-Tenant Leakage
+
+Data or permission bleed
+
+Mitigation:
+
+Mandatory tenant binding at every boundary
+
+Deny on mismatch
+
+E) AI Misuse (Future-Facing)
+
+AI acting beyond delegated authority
+
+Mitigation:
+
+AI identities are always delegated
+
+No autonomous trust elevation
+
+Full audit trail required
+
+🔐 FAIL-CLOSED BOUNDARY RULES
+
+Unknown boundary → deny
+
+Mixed boundary signals → deny
+
+Boundary downgrade attempt → deny
+
+Boundary escalation attempt → deny
+
+No “best guess” routing.
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Boundary crossings must emit:
+
+Source boundary
+
+Target boundary
+
+Identity (if any)
+
+Trust level
+
+Outcome (allowed/denied)
+
+This enables post-incident forensics.
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 30 docs to be created later:
+
+docs/architecture/trust-boundaries.md
+
+Cross-refs to:
+
+Identity model
+
+Authentication semantics
+
+Phase 28 runtime contexts
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No network diagrams
+
+No firewall rules
+
+No WAF discussion
+
+No SWE-1
+
+🧭 PHASE 30 — STEP 4
+Fail-Closed Authentication Rules & Edge Cases (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge ki authentication ke time jab confusion, partial proof, ya edge cases aayein, to system kaise react kare.
+
+Golden rule:
+
+Authentication ambiguity = full denial
+
+Security me “shayad” ka koi place nahi hota.
+
+Kya bilkul mana hai:
+Temporary allow, grace access, ya “user experience ke liye thoda allow”.
+
+🔒 CORE AUTHENTICATION PRINCIPLE (LOCKED)
+
+Authentication fails closed, never open.
+
+Incomplete proof → deny
+
+Conflicting proof → deny
+
+Stale proof → deny
+
+Concurrent change → deny
+
+No soft authentication states.
+
+🧱 FAIL-CLOSED AUTHENTICATION RULES (AUTHORITATIVE)
+Rule 1 — Partial Authentication
+
+Case:
+
+Identity claim present
+
+Verification incomplete
+
+Decision:
+
+Treat as Unauthenticated
+
+Trust level = 0
+
+All actions denied
+
+Rule 2 — Ambiguous Identity Resolution
+
+Case:
+
+Multiple identities match
+
+Conflicting identity attributes
+
+Decision:
+
+Deny authentication
+
+Require explicit retry
+
+No identity guessing.
+
+Rule 3 — Stale Authentication Proof
+
+Case:
+
+Proof validity uncertain
+
+Trust freshness unknown
+
+Decision:
+
+Deny authentication
+
+No “temporary trust”
+
+Rule 4 — Cross-Tenant Identity Conflict
+
+Case:
+
+Identity claim maps to multiple tenants
+
+Tenant binding unclear
+
+Decision:
+
+Deny authentication
+
+Require explicit tenant selection + verification
+
+Rule 5 — Concurrent Trust State Change
+
+Case:
+
+Identity revoked or downgraded mid-request
+
+Decision:
+
+Re-evaluate authentication
+
+If state changed → deny
+
+Rule 6 — Boundary Downgrade Attempt
+
+Case:
+
+Authenticated identity attempting public-only behavior
+
+Or public path attempting authenticated behavior
+
+Decision:
+
+Deny
+
+Require fresh authentication at correct boundary
+
+Rule 7 — Authentication Replay or Reuse (Conceptual)
+
+Case:
+
+Reuse of authentication proof outside intended context
+
+Decision:
+
+Deny
+
+Require fresh authentication
+
+(No token formats discussed here.)
+
+🚫 EXPLICITLY FORBIDDEN AUTHENTICATION BEHAVIORS
+
+❌ “Almost authenticated”
+
+❌ “Authenticated once, trusted forever”
+
+❌ “Internal user auto-authenticated”
+
+❌ “System identity skips authentication”
+
+❌ Silent downgrade or upgrade of trust
+
+🔐 AUTHENTICATION → AUTHORIZATION GATE (LOCKED)
+
+If authentication does not reach at least:
+
+Trust Level 1 (Authenticated)
+
+Then:
+
+Authorization MUST NOT be evaluated
+
+System must short-circuit to DENY
+
+No mixed pipelines.
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Every authentication attempt must emit:
+
+Identity claim (if any)
+
+Outcome (success / failure)
+
+Trust level assigned
+
+Reason for denial (if denied)
+
+Tenant resolution outcome
+
+This makes failures debuggable without weakening security.
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 30 docs impacted (to be created later):
+
+docs/architecture/authentication-semantics.md
+
+docs/architecture/identity-model.md
+
+Cross-refs to trust boundaries
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No token lifetimes
+
+No MFA policies
+
+No cryptography details
+
+No SWE-1
+
+🧭 PHASE 30 — STEP 5
+Documentation Placement & Phase 30 Closure Plan (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Phase 30 me jo identity, authentication, aur trust-boundary design hua hai, usko exact documentation files aur unki jagah me map karenge — aur phase close karne ka sahi tareeqa define karenge.
+
+Kyun zaroori:
+Security phases me agar documentation placement ya closure loose ho:
+
+Audit fail hota hai
+
+Trust assumptions leak karte hain
+
+Future phases unsafe ho jaate hain
+
+Kya bilkul mana hai:
+Extra files banana, governance folder me ghusna, ya bina audit ke phase close karna.
+
+📁 AUTHORITATIVE DOCUMENTATION PLACEMENT (LOCKED)
+
+All Phase 30 outputs belong ONLY under:
+
+docs/architecture/
+
+
+❌ governance/ me kuch bhi nahi
+❌ planning/ me kuch bhi nahi
+
+📄 FILES TO BE CREATED (AT EXECUTION TIME)
+
+⚠️ Abhi koi file create nahi ho rahi — ye sirf mapping hai.
+
+1️⃣ identity-model.md
+
+Contains:
+
+Identity definition & properties
+
+Identity taxonomy:
+
+Human
+
+System
+
+Service
+
+AI operator (delegated)
+
+Identity vs role vs capability separation
+
+Tenant binding rules
+
+Non-goals (identity ≠ permission)
+
+2️⃣ authentication-semantics.md
+
+Contains:
+
+Authentication meaning & outcomes
+
+Authentication states:
+
+Unauthenticated
+
+Authenticated
+
+Verified & bound
+
+System-trusted
+
+Authentication vs authorization separation
+
+Fail-closed authentication rules
+
+Audit emission requirements
+
+3️⃣ trust-boundaries.md
+
+Contains:
+
+Trust boundary taxonomy:
+
+External
+
+Public runtime
+
+Authenticated
+
+Internal system
+
+Governance
+
+Boundary crossing rules
+
+Zero-trust assumptions
+
+Attack surface categorization
+
+Boundary-level deny rules
+
+4️⃣ fail-closed-authentication-rules.md
+
+Contains:
+
+Partial authentication handling
+
+Ambiguity & conflict rules
+
+Stale proof handling
+
+Revocation timing
+
+Boundary downgrade attempts
+
+Replay/reuse semantics (conceptual)
+
+🔗 REQUIRED CROSS-REFERENCES (NO DUPLICATION)
+
+Each Phase 30 document MUST:
+
+Reference Phase 28 runtime context semantics
+
+Reference Phase 29 permission & capability semantics
+
+Reference other Phase 30 documents by filename
+
+Avoid duplicating content verbatim from earlier phases
+
+🚫 WHAT MUST NOT BE CREATED
+
+❌ No ADRs
+❌ No updates to phase-backbone.md
+❌ No updates to current-state.md until closure
+❌ No updates to progress-log.md until closure
+❌ No auth flow diagrams
+❌ No protocol details
+
+🧾 PHASE 30 CLOSURE CONDITIONS (DESIGN-ONLY)
+
+Phase 30 can be CLOSED only when all of the following are true:
+
+All 4 Phase 30 architecture documents are:
+
+Written
+
+Fail-closed by design
+
+Internally consistent
+
+Documentation audit passes (no leakage, no overlap)
+
+No code, tests, routes, configs, or middleware added
+
+ONE clean commit contains only Phase 30 docs
+
+docs/llm-handoff/current-state.md updated:
+
+Phase 30 marked COMPLETED
+
+docs/progress-log.md updated:
+
+Phase 30 entry added
+
+Fresh ZIP uploaded and audited
+
+🔐 MODE & AUTHORIZATION CHECK
+
+Current mode: DESIGN-ONLY
+
+SWE-1: ❌ discoveries locked
+
+File writing: ❌ NOT YET AUTHORIZED
+
+✅ PHASE 30 — DESIGN COMPLETE
+
+All design steps (1–5) for Phase 30 are now conceptually complete.
+
+No further design work is allowed in this phase without changing mode.
