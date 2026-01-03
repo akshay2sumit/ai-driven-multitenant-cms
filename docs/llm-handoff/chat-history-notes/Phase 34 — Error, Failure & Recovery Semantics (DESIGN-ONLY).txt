@@ -1,0 +1,769 @@
+🧭 PHASE 34 — Error, Failure & Recovery Semantics
+
+STATUS: ACTIVE (DESIGN-ONLY)
+EXECUTION: ❌ LOCKED
+SWE-1: ❌ NOT AUTHORIZED
+
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Is phase me hum define karenge jab system me kuch galat hota hai, to system kaise react karta hai, kya user ko dikhaya jaata hai, aur kaise system khud ko safe state me laata hai.
+
+Golden rule:
+
+Failures are inevitable; unsafe failures are unacceptable.
+
+📐 PHASE 34 — STEP 1
+Error vs Failure — Core Semantics (DESIGN)
+🔒 CORE RELIABILITY PRINCIPLE (LOCKED)
+
+Not all failures are errors, and not all errors are failures.
+
+System ko pehle ye samajhna aana chahiye:
+
+kya galat hua
+
+kitna serious hai
+
+kaun dekh sakta hai
+
+🧱 DEFINITIONS (AUTHORITATIVE)
+1️⃣ Error
+
+An expected, bounded condition that:
+
+Occurs during normal operation
+
+Can be handled deterministically
+
+Does NOT compromise system integrity
+
+Examples (conceptual):
+
+Authorization denied
+
+Validation failed
+
+Resource not found
+
+Rules:
+
+Errors are part of normal control flow
+
+Errors are recoverable at request level
+
+Errors do NOT require system recovery
+
+2️⃣ Failure
+
+An unexpected or unsafe condition that:
+
+Violates system assumptions
+
+May compromise correctness or security
+
+Requires recovery action
+
+Examples (conceptual):
+
+Partial data mutation detected
+
+Consistency violation
+
+Trust boundary breach
+
+Unhandled exception
+
+Rules:
+
+Failures are NOT part of normal flow
+
+Failures require containment
+
+Failures may trigger recovery or shutdown
+
+🔁 ERROR vs FAILURE DECISION RULE
+If integrity at risk → FAILURE
+Else → ERROR
+
+
+No gray zone allowed.
+
+🔐 FAIL-CLOSED CLASSIFICATION RULES
+
+If system cannot classify → treat as FAILURE
+
+If ambiguity exists → treat as FAILURE
+
+If failure detected mid-request → abort immediately
+
+🧭 VISIBILITY SEMANTICS (INTRODUCTION)
+Type	Visible to User	Logged	Audited
+Error	Yes (safe)	Yes	Yes
+Failure	No (generic)	Yes (detailed)	Yes
+
+Details will be refined in Step 2.
+
+🚫 EXPLICITLY FORBIDDEN BEHAVIOURS
+
+❌ Treating failures as errors
+
+❌ Silent failures
+
+❌ Retrying after integrity breach
+
+❌ Leaking internal details to users
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Planned Phase 34 docs (to be written later):
+
+docs/architecture/error-semantics.md
+
+Cross-refs to:
+
+Request lifecycle (Phase 32)
+
+Data consistency (Phase 33)
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No exception classes
+
+No HTTP status codes
+
+No retry logic
+
+No SWE-1
+
+🧭 PHASE 34 — STEP 2
+Error Classification, Severity & Visibility Rules (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Is step me hum define karenge error ke types, unki severity, aur kaun kya dekhega — user, developer, ya system.
+
+Golden rule:
+
+Users deserve clarity, not internals.
+Systems deserve detail, not silence.
+
+🔒 CORE VISIBILITY PRINCIPLE (LOCKED)
+
+The more dangerous the condition, the less detail exposed externally.
+
+Security aur trust ke liye ye rule non-negotiable hai.
+
+🧱 ERROR CLASSIFICATION (AUTHORITATIVE)
+1️⃣ Client Errors (Expected & Safe)
+
+Meaning:
+User ya caller ki wajah se request fail hui.
+
+Examples:
+
+Invalid input
+
+Missing required data
+
+Authorization denied
+
+Resource not found
+
+Rules:
+
+Deterministic
+
+Safe to expose (sanitized)
+
+No system recovery required
+
+2️⃣ Domain Errors (Business-Level)
+
+Meaning:
+Request valid hai, lekin business rules allow nahi karti.
+
+Examples:
+
+Publishing archived content
+
+Deleting locked entity
+
+State transition not allowed
+
+Rules:
+
+Safe to expose (high-level)
+
+Must not reveal internal state
+
+Auditable
+
+3️⃣ System Errors (Operational)
+
+Meaning:
+System infrastructure ya runtime issue.
+
+Examples:
+
+Dependency unavailable
+
+Timeout
+
+Resource exhaustion
+
+Rules:
+
+User sees generic message
+
+Detailed logs only internally
+
+May escalate to failure if integrity at risk
+
+4️⃣ Failures (Critical & Unsafe)
+
+Meaning:
+System integrity, security, ya consistency compromise ho sakta hai.
+
+Examples:
+
+Partial mutation detected
+
+Cross-tenant access attempt
+
+Trust boundary violation
+
+Unhandled exception
+
+Rules:
+
+Treated as FAILURE (not error)
+
+Immediate abort
+
+Containment & recovery required
+
+🚦 SEVERITY LEVELS (SEMANTIC)
+Severity	Meaning	System Response
+LOW	Safe, expected	Return error
+MEDIUM	Business constraint	Return error
+HIGH	Operational risk	Return generic error + log
+CRITICAL	Integrity risk	Failure handling
+
+Severity is semantic, not numeric.
+
+👁️ VISIBILITY RULES (LOCKED)
+User-Facing
+
+Only high-level, safe messages
+
+No stack traces
+
+No internal identifiers
+
+No hints about system internals
+
+Internal Logs
+
+Full error details
+
+Context, identity, tenant
+
+Correlation identifiers
+
+Audit Trail
+
+Error/failure category
+
+Severity
+
+Outcome (denied / aborted)
+
+Timestamp
+
+🔐 FAIL-CLOSED ESCALATION RULES
+
+If error classification fails → escalate to FAILURE
+
+If severity unclear → escalate to FAILURE
+
+If error repeats abnormally → escalate to FAILURE
+
+No silent downgrade.
+
+🚫 EXPLICITLY FORBIDDEN PRACTICES
+
+❌ Showing stack traces to users
+
+❌ Mapping failures to “friendly errors”
+
+❌ Swallowing errors
+
+❌ Retrying after critical failure
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 34 docs impacted (to be written later):
+
+docs/architecture/error-semantics.md
+
+docs/architecture/error-visibility.md
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No error codes
+
+No HTTP mappings
+
+No exception hierarchies
+
+No SWE-1
+
+🧭 PHASE 34 — STEP 3
+Failure Containment, Recovery & System Safety Rules (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Is step me hum define karenge jab failure ho chuka hai (sirf error nahi), to system:
+
+kaise fail ko contain karta hai
+
+kaise safe state me aata hai
+
+kab continue karta hai aur kab ruk jaata hai
+
+Golden rule:
+
+Contain first, recover second, continue last.
+
+🔒 CORE SAFETY PRINCIPLE (LOCKED)
+
+A system must prefer availability loss over integrity loss.
+
+Agar choice ho:
+
+system thoda der band rahe ✔
+
+system galat data serve kare ❌
+
+🧱 FAILURE CONTAINMENT SEMANTICS (AUTHORITATIVE)
+1️⃣ Immediate Containment
+
+On detecting a failure, system MUST:
+
+Abort current request
+
+Prevent further side effects
+
+Isolate affected scope
+
+No retries. No continuation.
+
+2️⃣ Containment Scope
+
+Failure containment may be scoped to:
+
+Single request (best case)
+
+Single identity/session
+
+Single tenant
+
+Subsystem
+
+Whole system (last resort)
+
+Rule:
+
+Smallest possible scope, but never unsafe scope.
+
+🔐 FAILURE ISOLATION RULES (LOCKED)
+
+Failure in one tenant MUST NOT affect others
+
+Failure in one session MUST NOT leak into others
+
+Cross-tenant blast radius = CRITICAL FAILURE
+
+🔁 RECOVERY SEMANTICS (DESIGN)
+Recovery Definition
+
+Recovery means:
+
+Restoring system to a known safe state
+
+Not necessarily restoring lost operations
+
+Recovery does NOT mean:
+
+Retrying failed operations blindly
+
+Hiding the failure
+
+Recovery Preconditions
+
+Recovery may only begin when:
+
+Failure cause is identified (at least category)
+
+Integrity boundaries are re-established
+
+No partial state is externally visible
+
+Recovery Outcomes
+Outcome	Meaning
+Automatic Recovery	Safe to resume
+Manual Intervention Required	System pauses
+Permanent Abort	Operation cannot be recovered
+🧭 FAIL-SAFE VS FAIL-FAST (SEMANTIC)
+Fail-Fast
+
+Abort immediately
+
+Used when integrity risk is high
+
+Fail-Safe
+
+Enter restricted mode
+
+Used when availability matters but integrity is safe
+
+Default: Fail-Fast
+
+🚫 EXPLICITLY FORBIDDEN RECOVERY BEHAVIOURS
+
+❌ Auto-retry after integrity failure
+
+❌ Silent recovery
+
+❌ Continuing with partial data
+
+❌ Cross-tenant recovery shortcuts
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Failure handling must emit:
+
+Failure category
+
+Scope of containment
+
+Recovery action taken
+
+Final system state
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 34 docs impacted (to be written later):
+
+docs/architecture/failure-containment.md
+
+docs/architecture/recovery-semantics.md
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No retry algorithms
+
+No circuit breakers
+
+No monitoring tools
+
+No SWE-1
+
+🧭 PHASE 34 — STEP 4
+User Experience, Messaging & Trust Preservation Rules (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Is step me hum define karenge jab error ya failure hota hai, to:
+
+user ko kya dikhaya jaata hai
+
+kaise bataya jaata hai
+
+aur system user ka trust kaise maintain karta hai
+
+Golden rule:
+
+Users must feel protected, not confused — and never blamed.
+
+🔒 CORE TRUST PRINCIPLE (LOCKED)
+
+Transparency without exposure builds trust; exposure without context destroys it.
+
+User ko sach batana zaroori hai,
+lekin system ke andar ka sach nahi.
+
+🧱 USER EXPERIENCE SEMANTICS (AUTHORITATIVE)
+1️⃣ Error UX (Expected Issues)
+
+When an error occurs:
+
+User sees:
+
+Clear, simple explanation
+
+What they can do next (if applicable)
+
+Message is:
+
+Non-technical
+
+Non-blaming
+
+Action-oriented (when safe)
+
+Examples (conceptual):
+
+“You don’t have permission to perform this action.”
+
+“This item cannot be published in its current state.”
+
+2️⃣ Failure UX (Critical Issues)
+
+When a failure occurs:
+
+User sees:
+
+Generic, calm message
+
+No technical details
+
+System:
+
+Logs full details internally
+
+Preserves audit trail
+
+Examples (conceptual):
+
+“Something went wrong. Please try again later.”
+
+“This action could not be completed safely.”
+
+👁️ CONSISTENCY OF MESSAGING (LOCKED)
+
+Same failure → same user message
+
+No message variation based on internal state
+
+No “sometimes it works” UX
+
+Consistency builds confidence.
+
+🔐 SECURITY-AWARE MESSAGING RULES
+
+Messages MUST NOT:
+
+Reveal internal identifiers
+
+Reveal tenant existence
+
+Reveal authorization structure
+
+Reveal data presence across tenants
+
+Reveal system topology
+
+Even indirectly.
+
+🧭 TRUST PRESERVATION STRATEGIES (DESIGN)
+A) Predictability
+
+Errors behave consistently
+
+Same inputs → same outcomes
+
+B) Honesty (Bounded)
+
+Admit failure occurred
+
+Do not speculate or over-explain
+
+C) Control
+
+User actions never worsen system state
+
+Retrying does not cause harm
+
+🚫 EXPLICITLY FORBIDDEN UX PATTERNS
+
+❌ Blaming the user for failures
+
+❌ Showing stack traces
+
+❌ “Unknown error” without guidance
+
+❌ Exposing partial success
+
+❌ UI masking a backend failure
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+UX-related failure handling must record:
+
+User-facing message key (not text)
+
+Error/failure category
+
+Timestamp
+
+Correlation ID
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 34 docs impacted (to be written later):
+
+docs/architecture/error-ux.md
+
+Cross-refs to:
+
+Error classification
+
+Failure containment
+
+Trust boundaries (Phase 30)
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No UI components
+
+No frontend logic
+
+No localization rules
+
+No SWE-1
+
+🧭 PHASE 34 — STEP 5
+Documentation Placement & Phase 34 Closure Plan (DESIGN)
+🧠 SIMPLE HINDI SUMMARY
+
+Is step me hum lock kar rahe hain:
+
+Phase 34 ke final documentation files
+
+Unki exact location
+
+Phase ko ek hi cycle me execute + close karne ka process
+
+Taaki:
+
+Aaj hi design/documentation finish ho
+
+Kal execution-readiness gate ke saath coding start ho
+
+📁 AUTHORITATIVE DOCUMENTATION PLACEMENT (LOCKED)
+
+All Phase 34 outputs go ONLY under:
+
+docs/architecture/
+
+
+❌ governance/
+❌ planning/
+❌ execution folders
+
+📄 FILES TO BE CREATED (AT EXECUTION TIME)
+1️⃣ error-semantics.md
+
+Contains:
+
+Error vs failure definitions
+
+Classification rules
+
+Severity semantics
+
+Fail-closed escalation rules
+
+2️⃣ error-visibility.md
+
+Contains:
+
+User vs internal visibility rules
+
+What is safe to expose
+
+What must be hidden
+
+Logging vs audit expectations
+
+3️⃣ failure-containment.md
+
+Contains:
+
+Failure detection
+
+Containment scope rules
+
+Isolation guarantees
+
+Fail-fast vs fail-safe semantics
+
+4️⃣ recovery-semantics.md
+
+Contains:
+
+Recovery definition
+
+Preconditions
+
+Recovery outcomes
+
+When system resumes vs halts
+
+5️⃣ error-ux.md
+
+Contains:
+
+User messaging rules
+
+Trust preservation strategies
+
+Forbidden UX patterns
+
+Consistency of messaging
+
+🔗 REQUIRED CROSS-REFERENCES (MANDATORY)
+
+Each Phase 34 document MUST reference:
+
+Phase 32 — Request lifecycle & semantics
+
+Phase 33 — Data consistency & integrity
+
+Phase 30 — Trust boundaries
+
+Other Phase 34 docs by filename
+
+No duplication of earlier phase content.
+
+🧾 PHASE 34 CLOSURE CONDITIONS
+
+Phase 34 can be CLOSED only when:
+
+All 5 architecture docs are written
+
+Design-only (no code, no HTTP, no UI)
+
+ONE clean commit only
+
+docs/llm-handoff/current-state.md updated
+
+docs/progress-log.md updated
+
+Single ZIP uploaded and audited
+
+✅ SINGLE-CYCLE EXECUTION (APPROVED)
+
+Like Phases 30–33, Phase 34 is approved for:
+
+ONE SWE-1 execution → ONE commit → ONE ZIP
