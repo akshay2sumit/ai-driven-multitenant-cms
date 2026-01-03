@@ -1,0 +1,853 @@
+Phase 32 — Request, Command & Query Semantics (DESIGN-ONLY)
+This phase is the final logical prerequisite before:
+
+Data rules
+
+Error semantics
+
+Execution readiness
+
+🧠 SIMPLE HINDI EXPLANATION (MANDATORY)
+🔹 WHAT (Kya hoga)
+
+Is phase me hum define karenge:
+
+System me request ka matlab kya hota hai
+
+Read vs write ka clear separation
+
+Command (change) vs Query (read) semantics
+
+Side effects allowed hain ya nahi
+
+Idempotency ka meaning (repeat hone par kya hoga)
+
+Public vs authenticated vs internal requests ka behaviour
+
+👉 Ye phase controllers, APIs, aur services ka grammar banata hai
+👉 Bina code likhe.
+
+🔹 WHY (Kyun zaroori)
+
+Agar request semantics clear nahi hoti:
+
+Controllers fat jaate hain
+
+Same endpoint read + write karta hai
+
+Bugs “by design” ho jaate hain
+
+Testing mushkil ho jaata hai
+
+Phase 32 ke bina:
+
+Clean coding impossible hai
+
+🔹 WHAT IS STRICTLY NOT ALLOWED ❌
+
+Is phase me bilkul mana hai:
+
+❌ Routes
+
+❌ Controllers
+
+❌ API definitions
+
+❌ HTTP verbs mapping
+
+❌ Code
+
+❌ SWE-1 execution
+
+Sirf design-only documentation.
+
+📐 EXPECTED DESIGN OUTPUTS (HIGH LEVEL)
+
+(Detail authorization ke baad)
+
+Request lifecycle definition
+
+Command vs Query separation
+
+Side-effect rules
+
+Idempotency semantics
+
+Context binding (Phase 28)
+
+Authorization invocation points (Phase 29)
+
+Documentation placement & closure plan
+
+🔐 MODE DECLARATION
+
+MODE: DESIGN-ONLY
+Active Phase: ❌ NONE (until authorized)
+
+🧭 PHASE 32 — Request, Command & Query Semantics
+
+STATUS: ACTIVE (DESIGN-ONLY)
+EXECUTION: ❌ LOCKED
+SWE-1: ❌ NOT AUTHORIZED
+
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Is phase me hum define karenge system request ka grammar — kaunsa request read hai, kaunsa change karta hai, aur system inhe kaise samajhta aur treat karta hai.
+
+Kyun zaroori:
+Agar request semantics clear nahi hoti, to:
+
+Controllers bloated ho jaate hain
+
+Read/write mix ho jaata hai
+
+Testing aur security dono weak ho jaate hain
+
+Kya bilkul mana hai:
+Routes, APIs, HTTP verbs, ya koi code — sab mana.
+
+📐 PHASE 32 — STEP 1
+Request Lifecycle & Classification (DESIGN)
+🔒 CORE REQUEST PRINCIPLE (LOCKED)
+
+Every request is either a Query or a Command — never both.
+
+Query = read-only
+
+Command = state-changing
+
+Is rule ka koi exception nahi.
+
+🧱 REQUEST DEFINITION (AUTHORITATIVE)
+Request
+
+A single, intentional interaction initiated by an actor (human/system/service) that asks the system to either:
+
+Read state (Query), or
+
+Change state (Command)
+
+A request is:
+
+Context-bound (Phase 28)
+
+Identity-bound (Phase 30)
+
+Authorization-checked (Phase 29)
+
+Time-bound (Phase 31)
+
+🟦 QUERY (READ SEMANTICS)
+Definition
+
+A request that:
+
+Observes state
+
+Produces output
+
+Does not change system state
+
+Rules
+
+Must be side-effect free
+
+Must not mutate data
+
+Must not emit events (except audit logs)
+
+Must be safe to repeat
+
+Examples (conceptual):
+
+Fetch content
+
+List pages
+
+Preview data
+
+🟥 COMMAND (WRITE SEMANTICS)
+Definition
+
+A request that:
+
+Intends to change system state
+
+Produces side effects
+
+Rules
+
+May mutate state
+
+May emit events
+
+Must be authorized
+
+Must be auditable
+
+Examples (conceptual):
+
+Create page
+
+Publish content
+
+Change settings
+
+🔁 REQUEST LIFECYCLE (SEMANTIC)
+
+Every request conceptually passes through:
+
+Receive → Classify → Authenticate → Authorize → Execute → Audit
+
+
+If any step fails → DENY & STOP.
+
+🔐 FAIL-CLOSED CLASSIFICATION RULE
+
+If request type is ambiguous → deny
+
+If request tries to behave as both → deny
+
+If classification changes mid-processing → deny
+
+🚫 EXPLICITLY FORBIDDEN REQUEST PATTERNS
+
+❌ Read that mutates state
+
+❌ Write hidden inside read
+
+❌ Auto-write during preview
+
+❌ Command disguised as query
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Every request must emit:
+
+Request type (Query / Command)
+
+Actor
+
+Context
+
+Outcome (allowed/denied)
+
+Side-effect indicator
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Planned Phase 32 docs (to be written later):
+
+docs/architecture/request-semantics.md
+
+Cross-refs to:
+
+Phase 28 contexts
+
+Phase 29 authorization
+
+Phase 31 lifecycle rules
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No API shapes
+
+No HTTP mapping
+
+No controller logic
+
+No SWE-1
+
+🧭 PHASE 32 — STEP 2
+Command Semantics, Side Effects & Idempotency Rules (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge ki command ka behaviour kya hota hai, kaunse side effects allowed hain, aur same command dobara aaye to system kaise behave kare.
+
+Golden rule:
+
+Commands change state deliberately — never accidentally.
+
+Kya bilkul mana hai:
+Hidden writes, auto-retries that mutate state, ya “user ne dobara click kiya to kuch bhi ho jaaye”.
+
+🔒 CORE COMMAND PRINCIPLE (LOCKED)
+
+A command represents an explicit intent to change state.
+
+Command ≠ request wrapper
+
+Command ≠ API call
+
+Command ≠ business logic
+
+Command is a declarative intent.
+
+🧱 COMMAND EXECUTION SEMANTICS
+1️⃣ Explicit Intent Required
+
+Command MUST clearly declare:
+
+What change is intended
+
+System must never infer intent from:
+
+Context
+
+UI
+
+Past actions
+
+❌ Inferred commands are forbidden.
+
+2️⃣ Authorization is Mandatory
+
+Every command MUST pass:
+
+Authentication (Phase 30/31)
+
+Authorization (Phase 29)
+
+No “safe commands”
+
+No “admin shortcuts”
+
+3️⃣ Side Effect Rules (STRICT)
+
+Allowed side effects:
+
+State mutation
+
+Event emission
+
+Audit logging
+
+Forbidden side effects:
+
+Silent secondary mutations
+
+Cross-context mutations
+
+Hidden cascading writes
+
+Every side effect must be:
+
+Expected
+
+Auditable
+
+Traceable to the command
+
+🔁 IDEMPOTENCY SEMANTICS (VERY IMPORTANT)
+Definition
+
+Idempotent command = repeated execution results in the same final state.
+
+Idempotency is a property of command semantics, not of transport.
+
+Command Categories
+A) Naturally Idempotent Commands
+
+Setting a value to a specific state
+(e.g., “set status = published”)
+
+Rules:
+
+Repeating the command does not change outcome
+
+Must not emit duplicate side effects
+
+B) Non-Idempotent Commands
+
+Commands that create new entities
+(e.g., “create page”)
+
+Rules:
+
+System MUST detect replays
+
+Duplicate execution MUST be prevented or rejected
+
+No silent duplication
+
+🔐 FAIL-CLOSED IDEMPOTENCY RULES
+
+If idempotency cannot be determined → deny
+
+If replay detection fails → deny
+
+If command classification changes → deny
+
+No “best effort” idempotency.
+
+🚫 EXPLICITLY FORBIDDEN COMMAND BEHAVIOURS
+
+❌ Command triggering hidden queries that mutate state
+
+❌ Command auto-retrying without replay protection
+
+❌ Command partially succeeding
+
+❌ Command mutating state during validation
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Each command must emit:
+
+Command identity
+
+Actor
+
+Context
+
+Intended change
+
+Actual outcome
+
+Idempotency handling result
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 32 docs impacted (to be written later):
+
+docs/architecture/request-semantics.md
+
+docs/architecture/command-semantics.md
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No retry algorithms
+
+No queues
+
+No background workers
+
+No SWE-1
+
+🧭 PHASE 32 — STEP 3
+Query Semantics, Consistency & Read Guarantees (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge query ka behaviour, reads kitni consistent hongi, aur system kya guarantee deta hai jab koi data read karta hai.
+
+Golden rule:
+
+Queries observe reality; they never create it.
+
+Query ka kaam dekhna hai, badalna nahi.
+
+🔒 CORE QUERY PRINCIPLE (LOCKED)
+
+A query must be side-effect free and repeatable.
+
+Query ≠ cache warmer
+
+Query ≠ lazy initializer
+
+Query ≠ auto-fixer
+
+Repeat karo → same input → same output (within defined consistency).
+
+🧱 QUERY SEMANTICS (AUTHORITATIVE)
+Definition
+
+A Query is a request that:
+
+Reads system state
+
+Produces a representation of state
+
+Does not mutate state
+
+Query execution:
+
+Does not emit business events
+
+May emit audit logs only
+
+🧭 READ CONSISTENCY MODELS (SEMANTIC, NOT IMPLEMENTATION)
+1️⃣ Strongly Consistent Read
+
+Reflects the latest committed state
+
+Used when correctness > latency
+
+Rules:
+
+No stale data allowed
+
+If freshness cannot be guaranteed → deny or retry
+
+2️⃣ Read-Committed (Bounded Freshness)
+
+Reflects a recent, committed snapshot
+
+Small, acceptable staleness allowed
+
+Rules:
+
+Staleness must be bounded conceptually
+
+Snapshot must be internally consistent
+
+3️⃣ Eventual Observation
+
+Data may be stale
+
+Used only for:
+
+Analytics
+
+Non-critical insights
+
+Rules:
+
+MUST be explicitly declared
+
+MUST NOT be used for decision-making commands
+
+🔁 QUERY STABILITY RULES
+
+Same query + same inputs + same context
+→ same result (within declared consistency)
+
+If consistency cannot be met:
+
+Query MUST fail explicitly
+
+No silent degradation
+
+🔐 FAIL-CLOSED READ GUARANTEES
+
+Ambiguous consistency → deny
+
+Cross-tenant leakage risk → deny
+
+Context mismatch → deny
+
+Authorization failure → deny
+
+No partial reads.
+
+🚫 EXPLICITLY FORBIDDEN QUERY BEHAVIOURS
+
+❌ Query triggering writes
+
+❌ Query auto-fixing data
+
+❌ Query depending on UI state
+
+❌ Query mutating caches with side effects
+
+❌ Query emitting domain events
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Each query must emit:
+
+Query identity
+
+Actor
+
+Context
+
+Declared consistency level
+
+Outcome (success/denied)
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 32 docs impacted (to be written later):
+
+docs/architecture/query-semantics.md
+
+Cross-refs to:
+
+Command semantics
+
+Phase 28 runtime contexts
+
+Phase 29 authorization
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No caching strategies
+
+No DB isolation levels
+
+No replicas discussion
+
+No SWE-1
+
+🧭 PHASE 32 — STEP 4
+Request Context Binding, Authorization Hooks & Failure Rules (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge ki request ko context kaise milta hai, authorization kis jagah hota hai, aur failure aate hi system kaise rukta hai.
+
+Golden rule:
+
+A request that cannot be safely evaluated must not proceed.
+
+🔒 CORE REQUEST BINDING PRINCIPLE (LOCKED)
+
+Every request must be explicitly bound to context, identity, and tenant before execution.
+
+Context = Phase 28
+
+Identity = Phase 30/31
+
+Authorization = Phase 29
+
+No implicit binding allowed.
+
+🧱 REQUEST CONTEXT BINDING (AUTHORITATIVE)
+
+A request MUST be bound to:
+
+Execution Context
+
+Authoring
+
+Runtime/Public
+
+System/Background
+
+Governance
+
+Identity & Trust State
+
+Authenticated identity
+
+Trust level
+
+Tenant
+
+Actor tenant
+
+Target resource tenant
+
+If any binding is missing → DENY.
+
+🔐 AUTHORIZATION HOOK PLACEMENT (DESIGN)
+
+Authorization MUST occur:
+
+After authentication
+
+Before command execution
+
+Before query execution
+
+No late authorization.
+
+Authorization Invocation Rules
+
+Every command → authorization required
+
+Every query → authorization required (even read)
+
+Authorization decision:
+
+Uses Phase 29 semantics
+
+Must be deterministic
+
+Must be auditable
+
+🔁 FAILURE SHORT-CIRCUIT RULES
+
+Failure at ANY stage causes:
+
+STOP → DENY → AUDIT
+
+
+Stages include:
+
+Context resolution
+
+Authentication
+
+Authorization
+
+Consistency guarantee
+
+Idempotency check
+
+No fallback logic.
+
+🚫 EXPLICITLY FORBIDDEN REQUEST FLOWS
+
+❌ Execute then authorize
+
+❌ Authorize only writes
+
+❌ Skip auth for “safe reads”
+
+❌ Retry after partial mutation
+
+❌ Continue on degraded context
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Every request must emit:
+
+Request ID
+
+Request type (Query / Command)
+
+Context
+
+Identity
+
+Authorization decision
+
+Failure reason (if denied)
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 32 docs impacted (to be written later):
+
+docs/architecture/request-semantics.md
+
+docs/architecture/authorization-hooks.md
+
+Cross-refs to:
+
+Phase 28 contexts
+
+Phase 29 permissions
+
+Phase 31 lifecycle rules
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No middleware design
+
+No filters/interceptors
+
+No retry pipelines
+
+No SWE-1
+
+🧭 PHASE 32 — STEP 5
+Documentation Placement & Phase 32 Closure Plan (DESIGN)
+🧠 SIMPLE HINDI SUMMARY
+
+Is step me hum ye lock kar rahe hain:
+
+Phase 32 ke docs exactly kahan rahenge
+
+Kaunse files banengi
+
+Phase kaise ek hi cycle me execute + close hoga
+
+Taaki:
+
+Aaj design finish ho
+
+Kal coding clean start ho
+
+📁 AUTHORITATIVE DOCUMENTATION PLACEMENT (LOCKED)
+
+All Phase 32 outputs go ONLY under:
+
+docs/architecture/
+
+
+❌ governance/
+❌ planning/
+❌ llm-handoff/ (except closure updates)
+
+📄 FILES TO BE CREATED (AT EXECUTION TIME)
+1️⃣ request-semantics.md
+
+Contains:
+
+Request definition
+
+Query vs Command classification
+
+Request lifecycle
+
+Fail-closed classification rules
+
+2️⃣ command-semantics.md
+
+Contains:
+
+Command intent rules
+
+Authorization requirement
+
+Side-effect rules
+
+Idempotency semantics
+
+Replay handling (semantic)
+
+3️⃣ query-semantics.md
+
+Contains:
+
+Query definition
+
+Consistency models (strong / bounded / eventual)
+
+Read guarantees
+
+Forbidden read behaviors
+
+4️⃣ authorization-hooks.md
+
+Contains:
+
+Where authorization is invoked
+
+Context binding rules
+
+Failure short-circuit rules
+
+Audit emission requirements
+
+🔗 REQUIRED CROSS-REFERENCES (MANDATORY)
+
+Each Phase 32 doc MUST reference:
+
+Phase 28 — Runtime Contexts
+
+Phase 29 — Permission Semantics
+
+Phase 31 — Lifecycle & Trust
+
+Other Phase 32 docs by filename
+
+No duplication of earlier phase text.
+
+🧾 PHASE 32 CLOSURE CONDITIONS (DESIGN-ONLY)
+
+Phase 32 can be CLOSED only when:
+
+All 4 architecture docs are written
+
+No code / routes / APIs added
+
+One clean commit only
+
+docs/llm-handoff/current-state.md updated
+
+docs/progress-log.md updated
+
+Single ZIP uploaded and audited
