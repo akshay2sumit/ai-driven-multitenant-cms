@@ -1,0 +1,605 @@
+Boundary Taxonomy (Define the Lines That Must Never Be Crossed)
+
+Goal: Identify and define the hard boundaries of the system. Each boundary states what is allowed and what is forbidden—non-negotiable for the lifetime of the platform.
+
+1️⃣ GOVERNANCE BOUNDARY
+
+What it separates: Decision authority vs execution.
+
+ALLOWED
+
+Sumit approves vision, scope, and phase authorization
+
+Aarav plans, audits, sequences, and enforces governance
+
+SWE-1 executes only written instructions
+
+FORBIDDEN
+
+Execution without explicit authorization
+
+SWE-1 deciding scope, design, or phases
+
+Any agent overriding governance documents
+
+WHY THIS EXISTS
+
+Prevents uncontrolled changes and silent drift
+
+2️⃣ CORE PLATFORM vs EXTENSION BOUNDARY
+
+What it separates: Immutable core vs future capabilities.
+
+ALLOWED
+
+Core platform changes only via authorized phases
+
+Extensions only where explicitly designed (no plugins by default)
+
+FORBIDDEN
+
+Plugin marketplaces
+
+Runtime code injection into core
+
+Bypassing governance to “extend” behavior
+
+WHY THIS EXISTS
+
+Preserves long-term maintainability and security
+
+3️⃣ AUTHORING vs RUNTIME BOUNDARY
+
+What it separates: Content creation vs content delivery.
+
+ALLOWED
+
+Authoring happens in controlled, authenticated contexts
+
+Runtime is read-only, fail-closed
+
+FORBIDDEN
+
+Writing or mutating data at runtime
+
+Admin logic exposed in public paths
+
+WHY THIS EXISTS
+
+Prevents data corruption and public attack surfaces
+
+4️⃣ TENANT ISOLATION BOUNDARY
+
+What it separates: One tenant from another—at every layer.
+
+ALLOWED
+
+Tenant-scoped data, config, and execution
+
+Explicit, audited cross-tenant operations (if ever allowed)
+
+FORBIDDEN
+
+Shared mutable state across tenants
+
+Implicit tenant context
+
+Cross-tenant reads/writes by default
+
+WHY THIS EXISTS
+
+Data security, privacy, and legal safety
+
+5️⃣ PUBLIC EXPOSURE BOUNDARY
+
+What it separates: Internal system vs public access.
+
+ALLOWED
+
+Public exposure only when explicitly authorized
+
+Fail-closed defaults for routes and services
+
+FORBIDDEN
+
+Accidental public routes
+
+Debug/admin endpoints exposed publicly
+
+“Temporary” public access
+
+WHY THIS EXISTS
+
+Prevents data leaks and attack vectors
+
+6️⃣ AI CONTROL BOUNDARY
+
+What it separates: Assisted intelligence vs autonomous control.
+
+ALLOWED
+
+AI as a controlled operator
+
+AI acting only within governance-defined limits
+
+Human approval where required
+
+FORBIDDEN
+
+Autonomous AI decision-making
+
+AI modifying governance, code, or phases
+
+AI learning from production data without approval
+
+WHY THIS EXISTS
+
+Prevents runaway behavior and compliance risks
+PHASE 22 — STEP 2
+System Invariants (Non-Negotiable Truths)
+
+Definition:
+An invariant is a rule that must always remain true, regardless of features, scale, AI capability, refactors, or future phases.
+If an invariant is violated → the system is invalid.
+
+🔐 CORE SYSTEM INVARIANTS (AUTHORITATIVE)
+Invariant 1 — Governance Supremacy
+
+Governance rules override:
+
+Features
+
+Speed
+
+Convenience
+
+AI suggestions
+
+No action occurs without explicit authorization.
+
+Violation = STOP + rollback
+
+Invariant 2 — Single Source of Truth
+
+The Git repository is the only source of truth.
+
+Chat history, memory, or notes are never authoritative.
+
+Violation = STOP + re-ingest ZIP
+
+Invariant 3 — Phase Discipline
+
+Only one phase may be active at a time.
+
+Phase order is immutable once defined in phase-backbone.md.
+
+A phase is closed only after full documentation + audit.
+
+Violation = STOP + governance review
+
+Invariant 4 — Core Platform Immutability
+
+Core platform behavior cannot be altered at runtime.
+
+No plugins, hot-patches, or dynamic overrides.
+
+Violation = architectural breach
+
+Invariant 5 — Tenant Isolation
+
+Tenant data, config, and execution are strictly isolated.
+
+No implicit tenant context.
+
+Cross-tenant operations are forbidden unless explicitly designed and audited.
+
+Violation = security incident
+
+Invariant 6 — Fail-Closed by Default
+
+Missing configuration, unclear state, or ambiguity → system denies action.
+
+Silence is never interpreted as approval.
+
+Violation = unsafe behavior
+
+Invariant 7 — Authoring ≠ Runtime
+
+Authoring paths can mutate state.
+
+Runtime paths are read-only and public-safe.
+
+These contexts must never mix.
+
+Violation = integrity risk
+
+Invariant 8 — Explicit Public Exposure
+
+Nothing is public unless explicitly authorized and documented.
+
+Debug, admin, or internal logic must never be exposed.
+
+Violation = exposure incident
+
+Invariant 9 — Controlled AI
+
+AI operates only as a bounded assistant.
+
+AI cannot:
+
+Change governance
+
+Close phases
+
+Modify code or data autonomously
+
+Human approval remains mandatory.
+
+Violation = governance breach
+
+Invariant 10 — Documentation as Law
+
+Documentation defines current truth, not intent or roadmap.
+
+If it is not documented, it is not real.
+
+current-state.md always reflects reality.
+
+Violation = audit failure
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 2)
+
+Invariants ka matlab kya hai?
+Yeh woh rules hain jo kabhi nahi toot sakte.
+
+Chahe:
+
+AI powerful ho jaaye
+
+System bada ho jaaye
+
+Features complex ho jaaye
+
+Yeh rules hamesha same rahenge.
+
+✅ STEP 2 STATUS
+
+System invariants: DEFINED
+
+Consistent with boundaries (Step 1)
+
+Ready to proceed
+
+PHASE 22 — STEP 3
+Violation Handling & Mandatory STOP Conditions
+
+Purpose:
+Define exact, non-negotiable responses when any boundary or invariant is threatened or violated.
+This ensures the system fails safely, never silently.
+
+🛑 UNIVERSAL STOP PRINCIPLE
+
+If any invariant is unclear, threatened, or violated → STOP immediately.
+
+No retries. No assumptions. No “best effort.”
+
+📋 VIOLATION RESPONSE MATRIX (AUTHORITATIVE)
+1️⃣ Governance Violation
+
+Examples
+
+Phase executed without authorization
+
+SWE-1 exceeds scope
+
+Governance documents bypassed
+
+MANDATORY RESPONSE
+
+Immediate STOP
+
+Roll back to last clean commit
+
+Governance review required
+
+Phase re-authorization needed
+
+2️⃣ Source-of-Truth Violation
+
+Examples
+
+Reasoning from chat memory
+
+Using outdated ZIP
+
+Missing authoritative docs
+
+MANDATORY RESPONSE
+
+STOP
+
+Re-ingest latest ZIP
+
+Re-determine phase from docs
+
+3️⃣ Phase Discipline Violation
+
+Examples
+
+Multiple phases mixed
+
+Future phase discussed as current
+
+Phase closed without documentation
+
+MANDATORY RESPONSE
+
+STOP
+
+Isolate violation
+
+Correct documentation
+
+Resume only after governance approval
+
+4️⃣ Tenant Isolation Violation
+
+Examples
+
+Cross-tenant data access
+
+Shared mutable state
+
+MANDATORY RESPONSE
+
+STOP
+
+Treat as security incident
+
+Isolate affected tenants
+
+Audit access paths
+
+5️⃣ Public Exposure Violation
+
+Examples
+
+Accidental public route
+
+Admin/debug endpoint exposed
+
+MANDATORY RESPONSE
+
+STOP
+
+Disable exposure immediately
+
+Security audit required
+
+Explicit re-authorization needed
+
+6️⃣ AI Control Violation
+
+Examples
+
+AI autonomously changing scope
+
+AI modifying governance or code
+
+MANDATORY RESPONSE
+
+STOP
+
+Disable AI action path
+
+Human governance review required
+
+7️⃣ Documentation Drift Violation
+
+Examples
+
+current-state.md out of sync
+
+Progress log missing entries
+
+MANDATORY RESPONSE
+
+STOP
+
+Documentation correction
+
+Phase closure blocked until fixed
+
+8️⃣ Ambiguity / Uncertainty
+
+Examples
+
+Unclear authorization
+
+Conflicting docs
+
+Missing context
+
+MANDATORY RESPONSE
+
+STOP
+
+Ask explicit clarification
+
+No action until resolved
+
+🔐 ESCALATION RULE (CRITICAL)
+
+Only Sumit can:
+
+Approve recovery
+
+Authorize continuation
+
+Aarav enforces STOP and remediation
+
+SWE-1 remains inactive during violations
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 3)
+
+Agar rule tootne ka doubt bhi ho?
+Turant STOP.
+
+Kya nahi karna?
+Guess ❌
+Patch ❌
+“Chal jaayega” ❌
+
+Kya karna hai?
+Rukna ✔️
+Check karna ✔️
+Approval lena ✔️
+
+✅ STEP 3 STATUS
+
+Violation handling defined
+
+STOP conditions explicit
+
+Governance-first behavior locked
+
+PHASE 22 — STEP 4
+Documentation Placement Plan (Design-Only)
+
+Purpose:
+Decide where the boundaries, invariants, and violation rules from Phase 22 will live when we later document them, without writing or changing any files now.
+
+This ensures Phase 22 can be closed cleanly with minimal, precise documentation updates later.
+
+🗂️ AUTHORITATIVE PLACEMENT PLAN
+1️⃣ Primary Governance Anchor (REQUIRED)
+
+File (existing):
+
+docs/governance/ (exact filename to be decided at closure time)
+
+Will contain:
+
+System Boundaries (from Step 1)
+
+System Invariants (from Step 2)
+
+Violation Handling & STOP Conditions (from Step 3)
+
+Reason:
+
+These are constitutional rules, not architecture or implementation details.
+
+Governance must supersede all other docs.
+
+2️⃣ Cross-Reference in docs/documentation/overview.md
+
+Purpose:
+
+Declare where authoritative governance rules live
+
+Prevent duplication or shadow documentation
+
+Will add later:
+
+A reference pointing to the Phase 22 governance document
+
+Explicit statement:
+
+“System boundaries and invariants are defined in governance docs and are non-negotiable.”
+
+3️⃣ current-state.md Update (Closure-Time Only)
+
+Purpose:
+
+Reflect that:
+
+System boundaries are formally defined
+
+Invariants are locked
+
+Violation handling is established
+
+Important Constraint:
+
+current-state.md will state fact, not list rules
+
+No duplication of boundary text
+
+4️⃣ progress-log.md Entry
+
+Purpose:
+
+Record Phase 22 completion
+
+Describe scope as design-only
+
+Summarize:
+
+Boundaries defined
+
+Invariants locked
+
+STOP conditions established
+
+5️⃣ Explicit NON-PLACEMENT (IMPORTANT)
+
+The following will NOT contain Phase 22 content:
+
+❌ Architecture design docs
+
+❌ Module design docs
+
+❌ Developer guides
+
+❌ User documentation
+
+❌ AI phase planning response notes
+
+Reason:
+
+Boundaries/invariants are not optional guidance
+
+They must not be diluted or repeated
+
+🔐 SINGLE-SOURCE RULE (REASSERTED)
+
+When documented:
+
+One authoritative location
+
+Everywhere else → reference only
+
+No copy-paste variants
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 4)
+
+Rules kahaan likhe jaayenge?
+Governance docs mein — ek hi jagah.
+
+Doosri jagah?
+Sirf reference hoga, repeat nahi.
+
+Iska fayda?
+Rules kabhi confuse nahi honge
+aur koi unko tod nahi paayega.
+
+✅ STEP 4 STATUS
+
+Documentation placement plan: DEFINED
+
+No conflicts with governance
+
+Phase 22 design scope FULLY COMPLETE
+
+🧭 PHASE 22 — DESIGN COMPLETE
+
+All design steps are now complete:
+
+Step 1: Boundary Taxonomy ✅
+
+Step 2: System Invariants ✅
+
+Step 3: Violation Handling & STOP Conditions ✅
+
+Step 4: Documentation Placement Plan ✅

@@ -1,0 +1,916 @@
+🎯 PHASE 26 — INTENT (FROM BACKBONE)
+
+Purpose:
+
+Define who can act, in what capacity, and under which authority
+
+Establish identity, authentication, and authorization semantics
+
+Clarify roles, permissions, trust boundaries, and delegation
+
+Prevent security ambiguity before schemas, APIs, or code exist
+
+This phase answers:
+
+“Who is trusted to do what, and why?”
+
+🚫 WHAT IS EXPLICITLY NOT ALLOWED IN PHASE 26
+
+❌ No authentication mechanisms (OAuth, JWT, etc.)
+
+❌ No permission tables or schemas
+
+❌ No APIs
+
+❌ No code
+
+❌ No SWE-1 execution
+
+Phase 26 is 100% DESIGN + SEMANTICS.
+
+🇮🇳 SIMPLE HINDI EXPLANATION
+
+Phase 26 mein kya hoga?
+Hum define karenge:
+
+Kaun kaun system use kar sakta hai
+
+Kaun kya action le sakta hai
+
+Trust ka matlab kya hai
+
+Iska fayda?
+Aage jaakar:
+
+Security gaps nahi honge
+
+Permission clear rahegi
+
+Access control strong hoga
+
+Kya mana hai?
+Code ❌
+Schema ❌
+Execution ❌
+
+PHASE 26 — TRUST, IDENTITY & ACCESS SEMANTICS
+
+Status: ACTIVE (Design-only)
+Execution: ❌ Not allowed
+SWE-1: ❌ Not engaged
+Commits: ❌ None during design
+
+🎯 PHASE 26 OBJECTIVE (AUTHORITATIVE)
+
+Define the semantic foundations of trust, identity, and access—who can act, in what capacity, under which authority, and within which boundaries—before any authentication mechanisms, schemas, APIs, or code exist.
+
+This phase ensures:
+
+Clear separation of identity vs authority
+
+Explicit trust boundaries
+
+Predictable, auditable access semantics
+
+Zero ambiguity before implementation
+
+🧱 SCOPE LOCK (NON-NEGOTIABLE)
+
+Allowed:
+
+Conceptual definitions (identity, trust, roles, permissions)
+
+Authority and delegation semantics
+
+Trust boundaries and invariants
+
+Design-only rules and STOP conditions
+
+Explicitly NOT allowed:
+
+❌ Auth mechanisms (OAuth, JWT, SSO, etc.)
+
+❌ Permission tables or schemas
+
+❌ APIs or endpoints
+
+❌ Code
+
+❌ SWE-1 execution
+
+🧭 PHASE 26 — WORK PLAN (DESIGN STEPS)
+Step 1 — Identity & Actor Taxonomy
+
+Define who can exist and act:
+
+Human users
+
+System actors
+
+Service identities
+
+AI-assisted actors (non-autonomous)
+
+Output: Actor categories with authority constraints.
+
+Step 2 — Trust Boundaries & Authority
+
+Define:
+
+What “trust” means in the system
+
+Where trust begins and ends
+
+Authority sources and limits
+
+Output: Trust boundary definitions and rules.
+
+Step 3 — Roles, Permissions & Delegation Semantics
+
+Define:
+
+Difference between roles and permissions
+
+How permissions are granted, inherited, or delegated
+
+What cannot be delegated
+
+Output: Declarative access semantics (no schemas).
+
+Step 4 — Authentication vs Authorization Semantics
+
+Define:
+
+Identity proof vs action permission
+
+Separation of concerns
+
+Failure and ambiguity handling
+
+Output: Semantic rules, not mechanisms.
+
+Step 5 — Documentation Placement Plan
+
+Decide where this will live when documented (governance vs docs), without writing files yet.
+
+🇮🇳 SIMPLE HINDI SUMMARY (PHASE START)
+
+Phase 26 mein kya kar rahe hain?
+Hum system ke liye clear kar rahe hain:
+
+Kaun kaun act kar sakta hai
+
+Kaun kis cheez ka adhikaar rakhta hai
+
+Trust ka matlab kya hai
+
+Iska fayda?
+Aage jaakar:
+
+Security gaps nahi rahenge
+
+Permission confusion nahi hogi
+
+Access control strong hoga
+
+Kya mana hai?
+Code ❌
+Schema ❌
+Execution ❌
+
+PHASE 26 — STEP 1
+Identity & Actor Taxonomy (Who Can Exist and Act)
+
+Purpose:
+Define who or what can act within the system, in what capacity, and with which inherent limits—independent of authentication mechanisms or schemas.
+This establishes the actor universe and prevents ambiguous or implicit authority.
+
+🧭 ACTOR CATEGORIES (AUTHORITATIVE)
+1️⃣ Human User
+
+Definition:
+A Human User is a real person acting within a tenant context.
+
+Inherent Properties:
+
+Always associated with exactly one tenant
+
+Acts only through assigned roles and permissions
+
+Subject to governance and audit
+
+Authority Limits:
+
+No inherent authority by existence
+
+Authority is granted, not assumed
+
+2️⃣ Tenant Administrator (Role-Bound Actor)
+
+Definition:
+A Tenant Administrator is a Human User acting under a privileged role within a tenant.
+
+Inherent Properties:
+
+Elevated permissions within the tenant boundary
+
+No authority outside the tenant
+
+Authority Limits:
+
+Cannot bypass governance
+
+Cannot alter system-owned or cross-tenant state
+
+3️⃣ System Actor
+
+Definition:
+A System Actor represents the platform itself performing governed operations.
+
+Inherent Properties:
+
+Acts only under explicit governance rules
+
+Performs maintenance, enforcement, and automation
+
+Authority Limits:
+
+Cannot violate invariants
+
+Cannot act outside defined lifecycle or trust boundaries
+
+4️⃣ Service Identity
+
+Definition:
+A Service Identity is a non-human actor representing an internal or external service.
+
+Inherent Properties:
+
+Scoped to a specific purpose
+
+Operates under least-privilege principles
+
+Authority Limits:
+
+No human-equivalent privileges
+
+No implicit tenant-wide access
+
+5️⃣ AI-Assisted Actor (Non-Autonomous)
+
+Definition:
+An AI-Assisted Actor is an AI system providing suggestions or drafts under human supervision.
+
+Inherent Properties:
+
+Cannot initiate actions independently
+
+Requires explicit human approval for any effect
+
+Authority Limits:
+
+No decision-making authority
+
+No self-authorization or delegation
+
+6️⃣ Governance Authority
+
+Definition:
+The Governance Authority is the constitutional authority that defines, approves, and enforces rules.
+
+Inherent Properties:
+
+Exists outside normal tenant roles
+
+Controls phases, scope, and constraints
+
+Authority Limits:
+
+Bound by its own documented rules
+
+Acts transparently and auditable
+
+🔐 GLOBAL ACTOR RULES (INVARIANTS)
+
+Every actor is explicitly classified
+
+No anonymous or implicit actors exist
+
+Authority is always derived, never assumed
+
+Actor scope is enforced by boundaries
+
+Ambiguous actor identity → STOP
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 1)
+
+Is step mein kya hua?
+Humne clear kar diya:
+
+Kaun kaun system mein act kar sakta hai
+
+Kis role mein
+
+Kis limit tak
+
+Iska fayda?
+Aage jaakar:
+
+Security gaps nahi honge
+
+“Yeh kaun tha?” type confusion nahi hogi
+
+✅ STEP 1 STATUS
+
+Identity & actor taxonomy: DEFINED
+
+Aligned with governance, boundaries, and invariants
+
+Ready to proceed
+
+PHASE 26 — STEP 2
+Trust Boundaries & Authority (Where Trust Begins and Ends)
+
+Purpose:
+Define what “trust” means, where it starts and stops, and how authority is established, limited, and revoked—independent of authentication mechanisms, schemas, or code.
+
+Trust boundaries exist to protect invariants. Authority exists to act within those boundaries—never beyond them.
+
+🧱 TRUST BOUNDARIES (AUTHORITATIVE)
+1️⃣ Tenant Boundary
+
+Meaning:
+The hard separation between one tenant and all others.
+
+Trust Rule:
+
+No actor trusted in one tenant is trusted in another by default.
+
+Authority Limit:
+
+Authority never crosses tenants without explicit governance action.
+
+2️⃣ Authoring vs Runtime Boundary
+
+Meaning:
+The separation between mutation and delivery.
+
+Trust Rule:
+
+Runtime is never trusted to mutate state.
+
+Authority Limit:
+
+Runtime actors have read-only authority.
+
+3️⃣ Governance Boundary
+
+Meaning:
+The separation between governed rules and execution.
+
+Trust Rule:
+
+Execution is never trusted to redefine rules.
+
+Authority Limit:
+
+Only governance may authorize phases, scope, or exceptions.
+
+4️⃣ Human vs System Boundary
+
+Meaning:
+The separation between human intent and automated execution.
+
+Trust Rule:
+
+System actors execute rules; they do not invent intent.
+
+Authority Limit:
+
+System actors cannot exceed encoded governance.
+
+5️⃣ AI Boundary
+
+Meaning:
+The separation between assistance and authority.
+
+Trust Rule:
+
+AI is never trusted as an authority.
+
+Authority Limit:
+
+AI cannot approve, deploy, or override decisions.
+
+6️⃣ External Boundary
+
+Meaning:
+The separation between the platform and external systems/services.
+
+Trust Rule:
+
+External systems are untrusted by default.
+
+Authority Limit:
+
+External access is least-privilege and explicitly scoped.
+
+🧭 AUTHORITY SOURCES (AUTHORITATIVE)
+A. Governance Authority
+
+Root source of authority
+
+Defines and enforces boundaries and invariants
+
+Authorizes phases and scope
+
+B. Tenant Authority
+
+Scoped authority within a tenant
+
+Cannot override governance
+
+Delegated via roles and permissions
+
+C. System Authority
+
+Operational authority to enforce rules
+
+No discretionary power
+
+D. Delegated Authority
+
+Temporarily granted authority
+
+Explicitly scoped and revocable
+
+Never transitive by default
+
+🔐 AUTHORITY RULES (INVARIANTS)
+
+Authority is explicitly granted
+
+Authority is scoped and revocable
+
+No authority exists outside a trust boundary
+
+Authority cannot override invariants
+
+Ambiguous authority → STOP
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 2)
+
+Is step mein kya define hua?
+Humne clear kar diya:
+
+Trust kahan tak valid hai
+
+Authority ka source kya hai
+
+Kaun kya nahi kar sakta
+
+Iska fayda?
+Aage jaakar:
+
+Security strong rahegi
+
+Koi bhi “overreach” nahi karega
+
+✅ STEP 2 STATUS
+
+Trust boundaries: DEFINED
+
+Authority sources and limits: LOCKED
+
+Aligned with Phase 22 invariants
+
+PHASE 26 — STEP 3
+Roles, Permissions & Delegation Semantics (Declarative, Non-Technical)
+
+Purpose:
+Define how authority is expressed and controlled—through roles, permissions, and delegation—without schemas, tables, APIs, or code.
+This step ensures authority is predictable, auditable, and revocable.
+
+🧩 CORE DEFINITIONS (AUTHORITATIVE)
+Role
+
+A Role is a named authority profile that groups permissions for a specific context.
+
+Roles do not contain business logic
+
+Roles do not imply identity
+
+Roles are tenant-scoped unless explicitly governed otherwise
+
+Permission
+
+A Permission is an explicit allowance to perform a specific class of action on a defined scope.
+
+Permissions are atomic
+
+Permissions are explicit, never implied
+
+Absence of permission = denial
+
+Delegation
+
+Delegation is the temporary granting of a subset of authority from one actor to another.
+
+Delegation is explicit
+
+Delegation is scoped
+
+Delegation is revocable
+
+🔐 ROLE SEMANTICS (INVARIANTS)
+
+Roles exist only within a tenant context
+
+A user may hold multiple roles
+
+Roles do not grant authority outside their scope
+
+Role assignment is governed and auditable
+
+Role ambiguity → STOP
+
+🔐 PERMISSION SEMANTICS (INVARIANTS)
+
+Permissions define what can be done, not how
+
+Permissions are evaluated at action time
+
+Permissions never bypass governance or boundaries
+
+Permissions do not cross tenant boundaries
+
+Implicit permissions are forbidden
+
+🔐 DELEGATION SEMANTICS (INVARIANTS)
+
+Delegation must be explicitly granted
+
+Delegation scope must be narrower than the grantor’s authority
+
+Delegation has a defined duration or condition
+
+Delegation is non-transitive by default
+
+Delegation cannot override invariants
+
+Delegation ambiguity → STOP
+
+🚫 EXPLICITLY FORBIDDEN PATTERNS
+
+❌ “Admin means everything”
+
+❌ Implicit privilege escalation
+
+❌ Permanent delegation without governance
+
+❌ Cross-tenant role inheritance
+
+❌ AI-held roles or permissions
+
+🛑 STOP CONDITIONS (CRITICAL)
+
+Immediate STOP is required if:
+
+A role implies unstated permissions
+
+A permission bypasses a boundary
+
+Delegation scope exceeds grantor authority
+
+Authority lineage cannot be determined
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 3)
+
+Is step mein kya clear hua?
+Humne define kar diya:
+
+Role kya hota hai
+
+Permission kya hota hai
+
+Delegation ka matlab kya hai
+
+Iska fayda?
+Aage jaakar:
+
+Permission confusion nahi hogi
+
+Security predictable rahegi
+
+✅ STEP 3 STATUS
+
+Roles semantics: DEFINED
+
+Permissions semantics: LOCKED
+
+Delegation semantics: CONTROLLED
+
+STOP conditions: CLEAR
+
+PHASE 26 — STEP 4
+Authentication vs Authorization Semantics (Strict Separation)
+
+Purpose:
+Formally separate identity proof (who are you?) from permission to act (what are you allowed to do?).
+This prevents security bugs caused by conflating login success with authority.
+
+🔑 AUTHENTICATION — SEMANTICS
+
+Definition:
+Authentication is the process of proving identity.
+
+What authentication establishes:
+
+The actor’s identity is verified
+
+The actor belongs to a known category (human, service, system)
+
+The actor is associated with a tenant context (if applicable)
+
+What authentication does NOT establish:
+
+❌ Permission to perform actions
+
+❌ Authority level
+
+❌ Role membership
+
+❌ Trust beyond identity proof
+
+Invariant:
+
+Successful authentication never implies authorization
+
+🛂 AUTHORIZATION — SEMANTICS
+
+Definition:
+Authorization is the process of deciding whether an authenticated actor may perform a specific action.
+
+What authorization establishes:
+
+Whether an action is allowed at this moment
+
+Based on:
+
+Roles
+
+Permissions
+
+Delegation
+
+Trust boundaries
+
+Governance rules
+
+What authorization does NOT establish:
+
+❌ Identity proof
+
+❌ Authentication validity
+
+❌ Long-term trust
+
+Invariant:
+
+Authorization is evaluated per action, not per session
+
+🧱 SEPARATION RULES (NON-NEGOTIABLE)
+
+Authentication must occur before authorization
+
+Authorization must be evaluated after authentication
+
+Authentication success without authorization → DENY
+
+Authorization without authentication → INVALID
+
+Cached authorization decisions must respect context and time
+
+🚨 FAILURE & AMBIGUITY HANDLING
+Authentication Failure
+
+Identity not proven
+
+Result: STOP / DENY
+
+No authorization attempt is made
+
+Authorization Failure
+
+Identity known, action not allowed
+
+Result: DENY
+
+Event is auditable
+
+Ambiguity (Either Stage)
+
+Identity unclear OR permission unclear
+
+Result: STOP
+
+Governance review required
+
+🔐 SECURITY INVARIANTS
+
+No action executes without both authentication and authorization
+
+No fallback from authorization failure
+
+No implicit trust from prior actions
+
+No “admin shortcut” semantics
+
+No AI bypass of auth checks
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 4)
+
+Is step mein kya clear hua?
+Humne clear kar diya:
+
+Login hona ≠ kaam karne ka right
+
+Har action ke liye permission check hoga
+
+Iska fayda?
+Aage jaakar:
+
+Security bugs nahi honge
+
+“Logged in tha isliye allowed” jaisa issue nahi aayega
+
+✅ STEP 4 STATUS
+
+Authentication semantics: DEFINED
+
+Authorization semantics: LOCKED
+
+Separation rules: ENFORCED
+
+Failure handling: CLEAR
+
+PHASE 26 — STEP 5
+Documentation Placement Plan (Design-Only)
+
+Purpose:
+Decide where Trust, Identity & Access Semantics will live when documented—without writing anything now—so Phase 26 can close cleanly, auditable, and without duplication or semantic drift.
+
+🗂️ AUTHORITATIVE PLACEMENT PLAN
+1️⃣ Primary Governance Anchor (REQUIRED)
+
+Location (root-level):
+
+/governance/
+
+
+Document (to be created at closure):
+
+governance/trust-identity-and-access-semantics.md
+
+
+Why here:
+
+Trust, identity, and access rules are constitutional
+
+They constrain schemas, APIs, auth mechanisms, AI behavior, and runtime enforcement
+
+Governance must supersede architecture and implementation
+
+Will contain (authoritative):
+
+Identity & Actor Taxonomy (Step 1)
+
+Trust Boundaries & Authority (Step 2)
+
+Roles, Permissions & Delegation Semantics (Step 3)
+
+Authentication vs Authorization Semantics (Step 4)
+
+Global STOP conditions for trust and access violations
+
+Writing rules (binding):
+
+Declarative, authoritative language
+
+No auth mechanisms (OAuth, JWT, etc.)
+
+No schemas or permission tables
+
+No examples or roadmap
+
+No implementation or operational detail
+
+2️⃣ Cross-Reference in docs/documentation/overview.md
+
+Purpose:
+
+Register the governance document as authoritative
+
+Prevent shadow definitions or duplicated security semantics
+
+Will add later:
+
+A concise reference to:
+
+governance/trust-identity-and-access-semantics.md
+
+Statement clarifying:
+
+“All trust, identity, and access rules are defined in governance.”
+
+Will NOT add:
+
+Role lists
+
+Permission explanations
+
+Auth flow descriptions
+
+3️⃣ docs/llm-handoff/current-state.md Update (Closure-Time Only)
+
+Purpose:
+
+Reflect factual system state after Phase 26
+
+Will state (later):
+
+Phase 26 — COMPLETED
+
+Trust, identity, and access semantics defined and locked
+
+Authority boundaries enforced
+
+No execution phase active
+
+Next phase not authorized
+
+Constraint:
+
+State only, not content duplication
+
+4️⃣ docs/progress-log.md Entry
+
+Purpose:
+
+Record Phase 26 completion
+
+Entry will include:
+
+Phase number & name
+
+Nature: Design-only
+
+Summary:
+
+Identity and actor taxonomy defined
+
+Trust boundaries and authority semantics locked
+
+Roles, permissions, and delegation semantics defined
+
+Authentication vs authorization separation enforced
+
+No code or schema changes
+
+5️⃣ Explicit NON-PLACEMENT (IMPORTANT)
+
+The following will NOT contain Phase 26 content:
+
+❌ Authentication implementation docs
+
+❌ Security architecture diagrams
+
+❌ Developer guides
+
+❌ User documentation
+
+❌ AI phase planning response notes
+
+Reason:
+
+Trust and access semantics must remain single-source and authoritative
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 5)
+
+Trust aur access ke rules kahan likhe jaayenge?
+Root-level governance mein — ek hi jagah.
+
+Doosri jagah?
+Sirf reference, repeat nahi.
+
+Iska fayda?
+Security ke rules kabhi confuse nahi honge
+aur implementation hamesha safe rahegi.
+
+✅ STEP 5 STATUS
+
+Documentation placement plan: DEFINED
+
+Aligned with governance constitution
+
+Phase 26 design scope FULLY COMPLETE

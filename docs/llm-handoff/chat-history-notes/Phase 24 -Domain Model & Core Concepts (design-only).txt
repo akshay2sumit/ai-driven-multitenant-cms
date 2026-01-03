@@ -1,0 +1,818 @@
+🎯 PHASE 24 OBJECTIVE (AUTHORITATIVE)
+
+Define the canonical domain language and core concepts of the system—what the fundamental things are and how they relate—without designing schemas, APIs, or code.
+
+This phase ensures:
+
+Shared vocabulary across governance, design, and future implementation
+
+Zero semantic drift
+
+Clean handoff to later schema and architecture phases
+
+🧱 SCOPE LOCK (NON-NEGOTIABLE)
+
+Allowed:
+
+Concept definitions (what a thing is)
+
+High-level relationships (conceptual, not technical)
+
+Invariants at the concept level
+
+Terminology normalization
+
+Explicitly NOT allowed:
+
+❌ Database tables/fields
+
+❌ ER diagrams or schemas
+
+❌ Code or APIs
+
+❌ UI flows
+
+❌ AI behavior implementation
+
+❌ SWE-1 execution
+
+🧭 PHASE 24 — WORK PLAN (DESIGN STEPS)
+Step 1 — Core Domain Concepts (Vocabulary)
+
+Define the fundamental concepts and precise meanings (e.g., Tenant, Content, Runtime, Governance).
+
+Output: A concise glossary with authoritative definitions.
+
+Step 2 — Concept Relationships (Conceptual)
+
+Describe how the core concepts relate at a high level (ownership, containment, visibility), without schemas.
+
+Output: Relationship statements in plain language.
+
+Step 3 — Concept Invariants
+
+Declare what must always be true about each concept (non-negotiable truths).
+
+Output: Invariant statements per concept.
+
+Step 4 — Documentation Placement Plan
+
+Decide where this domain model will live when documented (governance vs docs), without writing files yet.
+
+🇮🇳 SIMPLE HINDI SUMMARY (PHASE START)
+
+Phase 24 mein kya hoga?
+Hum system ki basic language fix karenge—
+kaun si cheez kya hai, aur kaise related hai.
+
+Iska fayda?
+Aage jaakar database, code, aur AI sab same meaning follow karega.
+
+Kya mana hai?
+Coding ❌
+Schemas ❌
+Execution ❌
+
+PHASE 24 — STEP 1
+Core Domain Concepts (Authoritative Vocabulary)
+
+Purpose:
+Define the canonical meanings of the system’s most fundamental concepts.
+These definitions are binding across governance, design, documentation, and future implementation.
+
+🧩 CORE DOMAIN CONCEPTS (AUTHORITATIVE)
+1️⃣ Tenant
+
+Definition:
+A Tenant is an isolated logical domain representing a single customer, organization, or project operating within the platform.
+
+Key Properties:
+
+Owns its data, configuration, and content
+
+Is isolated from all other tenants
+
+Has no implicit access to other tenants
+
+2️⃣ User
+
+Definition:
+A User is a human actor authenticated within a tenant context.
+
+Key Properties:
+
+Always belongs to exactly one tenant
+
+Has roles and permissions scoped to that tenant
+
+Cannot act outside its tenant boundary
+
+3️⃣ Role
+
+Definition:
+A Role is a named set of permissions defining what actions a user may perform within a tenant.
+
+Key Properties:
+
+Tenant-scoped
+
+Declarative (not hard-coded behavior)
+
+Evaluated by governance rules
+
+4️⃣ Content
+
+Definition:
+Content is any structured information authored, managed, and governed by the system.
+
+Key Properties:
+
+Exists in authoring context
+
+Versioned and stateful (draft, published, archived)
+
+Tenant-owned
+
+5️⃣ Content Type
+
+Definition:
+A Content Type defines the structure and semantics of a class of content.
+
+Key Properties:
+
+Declarative definition
+
+Governs validation and rendering rules
+
+Does not imply schema implementation
+
+6️⃣ Authoring Context
+
+Definition:
+The Authoring Context is the controlled environment where content and configuration may be created or modified.
+
+Key Properties:
+
+Authenticated and authorized
+
+Mutating operations allowed
+
+Never publicly exposed
+
+7️⃣ Runtime Context
+
+Definition:
+The Runtime Context is the read-only environment where approved content is delivered.
+
+Key Properties:
+
+Non-mutating
+
+Publicly accessible only when explicitly authorized
+
+Deterministic behavior
+
+8️⃣ Configuration
+
+Definition:
+Configuration is governed data that influences system behavior without changing core code.
+
+Key Properties:
+
+Versioned
+
+Validated
+
+Subject to governance approval
+
+9️⃣ Governance
+
+Definition:
+Governance is the set of constitutional rules, processes, and authorities that constrain and guide the system.
+
+Key Properties:
+
+Supersedes features and execution
+
+Controls phases, scope, and authority
+
+Enforced at all times
+
+🔟 Phase
+
+Definition:
+A Phase is a bounded unit of work with a single objective, explicit authorization, and formal closure.
+
+Key Properties:
+
+One phase active at a time
+
+Defined in the phase backbone
+
+Closed only after documentation and audit
+
+1️⃣1️⃣ Capability
+
+Definition:
+A Capability is a class of allowed system behavior defined by governance.
+
+Key Properties:
+
+Not a feature
+
+Not a promise
+
+Constrained by boundaries and invariants
+
+1️⃣2️⃣ Invariant
+
+Definition:
+An Invariant is a non-negotiable rule that must always hold true.
+
+Key Properties:
+
+Violations trigger STOP conditions
+
+Independent of implementation
+
+Constitutionally binding
+
+1️⃣3️⃣ Boundary
+
+Definition:
+A Boundary is a hard separation between domains of responsibility or behavior.
+
+Key Properties:
+
+Defines allowed vs forbidden actions
+
+Protects invariants
+
+Cannot be crossed without governance change
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 1)
+
+Is step mein kya hua?
+Humne system ke basic words ka matlab fix kar diya.
+
+Iska fayda?
+Aage jab koi bole “tenant” ya “content”,
+sab ka matlab same hoga.
+
+Kya mana hai?
+Schemas ❌
+Code ❌
+Execution ❌
+
+PHASE 24 — STEP 2
+Concept Relationships (Conceptual, Non-Technical)
+
+Purpose:
+Define how the core concepts relate to each other in plain language—ownership, containment, scope, and visibility—without schemas, tables, or technical diagrams.
+
+These relationships are semantic truths, not implementation instructions.
+
+🔗 CORE CONCEPT RELATIONSHIPS (AUTHORITATIVE)
+1️⃣ Tenant ↔ User
+
+A Tenant contains Users
+
+A User belongs to exactly one Tenant
+
+Users cannot exist outside a tenant context
+
+Implication:
+All identity, permissions, and actions are tenant-scoped.
+
+2️⃣ Tenant ↔ Content
+
+A Tenant owns Content
+
+Content cannot exist without a tenant
+
+Content is never shared across tenants by default
+
+Implication:
+Tenant isolation applies to all content lifecycle stages.
+
+3️⃣ Content ↔ Content Type
+
+A Content instance conforms to exactly one Content Type
+
+A Content Type governs structure and semantics, not storage
+
+Implication:
+Content meaning is declarative and governed.
+
+4️⃣ Authoring Context ↔ Content
+
+Content is created and modified only in the Authoring Context
+
+Authoring Context is authenticated and governed
+
+Implication:
+All mutations are controlled and auditable.
+
+5️⃣ Runtime Context ↔ Content
+
+Runtime Context reads approved Content
+
+Runtime Context never mutates Content
+
+Implication:
+Public access is safe, deterministic, and fail-closed.
+
+6️⃣ Configuration ↔ System Behavior
+
+Configuration influences behavior without altering code
+
+Configuration changes are governed and versioned
+
+Implication:
+Behavioral flexibility without breaking core immutability.
+
+7️⃣ Governance ↔ Phases
+
+Governance authorizes, sequences, and closes Phases
+
+Phases cannot self-authorize or overlap
+
+Implication:
+All work proceeds constitutionally.
+
+8️⃣ Governance ↔ Capabilities
+
+Governance defines and constrains Capabilities
+
+Capabilities do not expand without explicit governance action
+
+Implication:
+Scope creep is structurally prevented.
+
+9️⃣ Invariants ↔ Boundaries
+
+Boundaries exist to protect Invariants
+
+Invariants define what must always be true
+
+Implication:
+Boundaries are enforcement mechanisms, not suggestions.
+
+🔟 AI (Assisted Intelligence) ↔ Governance
+
+AI operates within governance-defined limits
+
+AI suggestions require human approval
+
+Implication:
+AI remains a tool, never an authority.
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 2)
+
+Is step mein kya hua?
+Humne bataya:
+
+Kaun kisko own karta hai
+
+Kaun kahan kaam karta hai
+
+Kaun kahan allowed nahi hai
+
+Iska fayda?
+Future mein koi confusion nahi hoga
+jab database ya code banega.
+
+✅ STEP 2 STATUS
+
+Concept relationships: DEFINED
+
+No schema leakage
+
+Aligned with governance and boundaries
+
+PHASE 24 — STEP 3
+Concept Invariants (Non-Negotiable Truths per Concept)
+
+Purpose:
+Declare what must always be true for each core concept—independent of implementation.
+If any invariant is violated → STOP (per Phase 22).
+
+🔐 CONCEPT-LEVEL INVARIANTS (AUTHORITATIVE)
+Tenant — Invariants
+
+A Tenant is always isolated from all other tenants.
+
+A Tenant owns its data, configuration, and content.
+
+No implicit cross-tenant access exists.
+
+User — Invariants
+
+A User always belongs to exactly one Tenant.
+
+A User cannot act without an authenticated tenant context.
+
+User permissions are tenant-scoped and governed.
+
+Role — Invariants
+
+Roles are defined per tenant.
+
+Roles grant permissions; they do not embed business logic.
+
+Role evaluation is governed and auditable.
+
+Content — Invariants
+
+Content is tenant-owned and versioned.
+
+Content mutation occurs only in the Authoring Context.
+
+Content state transitions are governed (e.g., draft → published).
+
+Content Type — Invariants
+
+A Content Type defines meaning and rules, not storage.
+
+Content Types are declarative and governed.
+
+Changes to Content Types are versioned and auditable.
+
+Authoring Context — Invariants
+
+Authoring Context is authenticated and authorized.
+
+Mutations are allowed only here.
+
+Authoring Context is never publicly exposed.
+
+Runtime Context — Invariants
+
+Runtime Context is read-only.
+
+Runtime behavior is deterministic and fail-closed.
+
+No admin, authoring, or debug actions exist in runtime.
+
+Configuration — Invariants
+
+Configuration is governed, versioned, and validated.
+
+Configuration influences behavior without changing core code.
+
+Invalid configuration results in fail-closed behavior.
+
+Governance — Invariants
+
+Governance supersedes features, execution, and AI.
+
+Governance authorizes phases, scope, and changes.
+
+Governance rules are always enforceable.
+
+Phase — Invariants
+
+Only one phase may be active at any time.
+
+A Phase has a single objective.
+
+A Phase is closed only after documentation and audit.
+
+Capability — Invariants
+
+Capabilities define allowed behavior classes, not features.
+
+Capabilities expand only via authorized phases.
+
+Capabilities are constrained by boundaries and invariants.
+
+Invariant — Invariants
+
+Invariants are absolute and non-negotiable.
+
+Violations trigger mandatory STOP.
+
+Invariants exist independently of implementation.
+
+Boundary — Invariants
+
+Boundaries define allowed vs forbidden actions.
+
+Boundaries exist to protect invariants.
+
+Boundaries cannot be crossed without governance change.
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 3)
+
+Is step mein kya hua?
+Humne har important cheez ke liye likh diya:
+
+“Yeh cheez hamesha aisi hi rahegi.”
+
+Iska fayda?
+Aage koi bhi feature aaye,
+yeh rules kabhi nahi tootenge.
+
+✅ STEP 3 STATUS
+
+Concept invariants: DEFINED
+
+Fully aligned with Phase 22 constitution
+
+Ready for final step
+
+PHASE 24 — STEP 4
+Documentation Placement Plan (Design-Only)
+
+Purpose:
+Decide where the Domain Model & Core Concepts will live when we later document them—without writing anything now—so Phase 24 can close cleanly with minimal, auditable edits.
+
+🗂️ AUTHORITATIVE PLACEMENT PLAN
+1️⃣ Primary Governance Anchor (REQUIRED)
+
+Location (root-level):
+
+/governance/
+
+
+Document (to be created at closure):
+
+governance/domain-model-and-core-concepts.md
+
+
+Why here:
+
+Domain vocabulary, relationships, and invariants are constitutional semantics
+
+They constrain schemas, APIs, AI behavior, and features
+
+Governance must supersede architecture and implementation
+
+Will contain (authoritative):
+
+Core Domain Concepts (Vocabulary) — Step 1
+
+Concept Relationships (Conceptual) — Step 2
+
+Concept Invariants — Step 3
+
+Writing rules:
+
+Declarative language
+
+No schemas, no diagrams, no tables
+
+No examples or roadmap
+
+No implementation detail
+
+2️⃣ Cross-Reference in docs/documentation/overview.md
+
+Purpose:
+
+Register the governance document as authoritative
+
+Prevent shadow definitions or duplicated terminology
+
+Will add later:
+
+A concise reference to governance/domain-model-and-core-concepts.md
+
+Statement clarifying:
+
+“Canonical domain terminology and relationships are defined in governance.”
+
+Will NOT add:
+
+Glossary duplication
+
+Relationship descriptions
+
+3️⃣ current-state.md Update (Closure-Time Only)
+
+Purpose:
+
+Reflect factual system state after Phase 24
+
+Will state (later):
+
+Phase 24 — COMPLETED
+
+Canonical domain model defined and locked
+
+Semantic drift prevention active
+
+No execution phase active
+
+Next phase not authorized
+
+Constraint:
+
+State only, not concept listings
+
+4️⃣ progress-log.md Entry
+
+Purpose:
+
+Record Phase 24 completion
+
+Entry will include:
+
+Phase number & name
+
+Nature: Design-only
+
+Summary:
+
+Core domain vocabulary defined
+
+Concept relationships established
+
+Concept invariants locked
+
+No code or schema changes
+
+5️⃣ Explicit NON-PLACEMENT (IMPORTANT)
+
+The following will NOT contain Phase 24 content:
+
+❌ Database or schema docs
+
+❌ Architecture or module design docs
+
+❌ Developer guides
+
+❌ User documentation
+
+❌ AI phase planning response notes
+
+Reason:
+
+Domain semantics must remain single-source and authoritative
+
+🇮🇳 SIMPLE HINDI SUMMARY (STEP 4)
+
+Domain model kahan likha jaayega?
+Root-level governance mein — ek hi jagah.
+
+Doosri jagah?
+Sirf reference, repeat nahi.
+
+Iska fayda?
+Language kabhi confuse nahi hogi
+aur future design clean rahega.
+
+✅ STEP 4 STATUS
+
+Documentation placement plan: DEFINED
+
+Aligned with Phase 22 & 23 governance
+
+Phase 24 design scope FULLY COMPLETE
+
+PHASE 24 — CLOSURE PLAN
+Domain Model & Core Concepts (Documentation-Only, Single-Commit)
+
+This plan defines exactly what will be documented, where, and how, so Phase 24 can be closed cleanly, auditable, and constitutionally.
+
+🎯 CLOSURE OBJECTIVE (AUTHORITATIVE)
+
+Formally close Phase 24 — Domain Model & Core Concepts by:
+
+Recording the canonical domain vocabulary
+
+Recording concept relationships and invariants
+
+Anchoring semantic truth at root-level governance
+
+Updating system state and progress records
+
+Making NO code, schema, API, or prompt changes
+
+Producing ONE clean commit
+
+📂 FILES TO BE UPDATED (LOCKED SCOPE)
+
+Exactly THREE files will be involved.
+
+1️⃣ NEW GOVERNANCE DOCUMENT (PRIMARY, AUTHORITATIVE)
+
+Location (root-level):
+
+/governance/domain-model-and-core-concepts.md
+
+
+Will contain (ONLY):
+
+Core Domain Concepts (Vocabulary)
+
+Concept Relationships (Conceptual)
+
+Concept Invariants
+
+Writing rules (NON-NEGOTIABLE):
+
+Declarative, constitutional language
+
+No schemas, diagrams, tables, or ER models
+
+No examples
+
+No roadmap or future intent
+
+No implementation or storage detail
+
+Written as canonical semantic law
+
+2️⃣ docs/llm-handoff/current-state.md
+
+Purpose:
+Reflect the factual system state after Phase 24.
+
+Will update to state:
+
+Phase 24 — COMPLETED
+
+Canonical domain model defined and locked
+
+Semantic drift prevention active
+
+No execution phase active
+
+Next phase not authorized
+
+Constraint:
+
+State only
+
+No glossary duplication
+
+3️⃣ docs/progress-log.md
+
+Purpose:
+Record Phase 24 completion.
+
+Entry will include:
+
+Phase number & name
+
+Nature: Design-only
+
+Status: Completed
+
+Summary:
+
+Core domain vocabulary defined
+
+Concept relationships established
+
+Concept invariants locked
+
+No code or schema changes made
+
+🧪 TESTING DISCIPLINE (DOCUMENTED)
+
+Testing Required: ❌ None
+
+Justification: Design-only, documentation-only phase
+
+Testing Deferred: N/A
+
+Fully compliant with .windsurfrules.
+
+🔐 COMMIT & CLOSURE RULES (LOCKED)
+
+When executed:
+
+Executor: SWE-1
+
+Commit count: ONE
+
+Commit message (EXACT):
+
+Phase 24: Document domain model and core concepts
+
+
+After commit:
+
+Push to GitHub
+
+Generate fresh aibos-repo.zip
+
+Upload ZIP
+
+Only after audit → Phase 24 CLOSED
+
+🇮🇳 SIMPLE HINDI SUMMARY
+
+Phase 24 ka closure kaise hoga?
+System ki language aur meaning ko
+ek governance document mein lock kiya jaayega.
+
+Kya nahi hoga?
+Code ❌
+Schema ❌
+Execution ❌
+
+Kitna kaam?
+Sirf documentation — ek clean commit.

@@ -1,0 +1,1250 @@
+Phase 28 — Policy Engine & Rule Evaluation Semantics (design-only)
+Phase 28 — Official Purpose (Backbone-Aligned)
+
+Define how decisions are made in the system in a way that is:
+
+Deterministic
+
+Auditable
+
+Versioned
+
+Tenant-aware
+
+Decoupled from application code
+
+This phase establishes the decision brain of the CMS — without implementing it.
+
+Phase 28 — Design Scope (Strict)
+1. Policy vs Rule vs Configuration (Canonical Definitions)
+
+Policy
+
+A governance-level decision contract
+
+Answers: “Is this allowed, denied, or conditionally permitted?”
+
+Versioned, auditable, and authoritative
+
+Rule
+
+An atomic condition evaluated by a policy
+
+Stateless or context-aware
+
+Never executed directly by controllers
+
+Configuration
+
+Static values
+
+❌ Must NOT encode decision logic
+
+Key Rule:
+Controllers, services, and jobs must never “decide” — they may only ask the policy layer.
+
+2. Policy Evaluation Lifecycle (Abstract)
+
+Conceptual flow (no implementation):
+
+Event Occurs
+   ↓
+Policy Invocation (with context)
+   ↓
+Rule Evaluation (deterministic)
+   ↓
+Decision Produced
+   ↓
+Audit Evidence Emitted
+   ↓
+(State Change may occur — governed by Phase 27)
+
+
+Policies consume events and emit decisions, never the other way around.
+
+3. Determinism & Repeatability Guarantees
+
+Policies must be:
+
+Purely evaluative
+
+Free of side effects
+
+Repeatable for the same inputs
+
+This enables:
+
+Post-facto audits
+
+Replay-based debugging
+
+Legal/compliance defensibility
+
+4. Policy Versioning Semantics
+
+Every decision is tied to:
+
+Policy identifier
+
+Policy version
+
+Policy updates:
+
+❌ Do not retroactively change past decisions
+
+✅ Apply only to future evaluations
+
+Audits must always answer:
+
+“Which policy version allowed/denied this?”
+
+5. Failure & Ambiguity Rules (Fail-Closed Alignment)
+
+Aligned with .windsurfrules and Phase 27:
+
+Missing policy → DENY
+
+Evaluation error → DENY
+
+Ambiguous rule result → DENY
+
+Partial context → DENY
+
+No silent allow paths are permitted.
+
+6. Multi-Tenant Policy Isolation
+
+Policies may be:
+
+Global (platform-level)
+
+Tenant-scoped
+
+Tenant policies:
+
+May restrict further
+
+❌ May NOT weaken global policies
+
+Inheritance is monotonic (only more restrictive)
+
+7. Audit Coupling (Non-Optional)
+
+Every policy decision must emit audit evidence containing:
+
+Triggering event ID
+
+Policy ID + version
+
+Inputs (sanitized)
+
+Decision result
+
+Timestamp
+
+Correlation ID
+
+This ties Phase 28 directly to Phase 27 without overlap.
+
+Explicit Non-Goals (Reconfirmed)
+
+No policy DSL
+
+No engine selection
+
+No storage schema
+
+No runtime wiring
+
+No UI
+
+No API
+
+This phase defines semantics only, not mechanics.
+
+Phase 28 — Documentation Placement Plan (Design-Only)
+
+When authorized for documentation execution later, content will live under:
+
+/docs/governance/policy-semantics.md
+
+Cross-references:
+
+Phase 27 (Events & Audit)
+
+Authorization & Permissions phases (future)
+
+No files are created at this time.
+
+Phase 28 — Closure Criteria (Future Audit)
+
+Phase 28 will be considered complete when:
+
+Policy terminology is unambiguous
+
+Evaluation lifecycle is clearly defined
+
+Failure rules are explicit
+
+Audit coupling is specified
+
+No implementation details exist
+
+ZIP audit confirms design-only changes
+
+Phase 28 — Step 1
+Canonical Policy Model & Vocabulary (Design-Only)
+
+This step locks terminology. No further policy discussion is valid unless it uses these definitions. This prevents semantic drift across phases, teams, and future implementations.
+
+1. Core Decision Vocabulary (Authoritative)
+Policy
+
+A versioned decision contract that evaluates a request context and returns a decision.
+
+Declarative (what is allowed, not how)
+
+Deterministic
+
+Auditable
+
+Time-bound via versioning
+
+Invoked, never embedded
+
+A policy answers:
+
+“Given this context, is this permitted now under the current ruleset?”
+
+Rule
+
+An atomic predicate used by a policy.
+
+Returns TRUE / FALSE / ERROR
+
+Has no authority on its own
+
+Must never cause side effects
+
+Can be composed but not stateful
+
+A rule answers:
+
+“Does this specific condition hold?”
+
+Decision
+
+The sole output of policy evaluation.
+
+Canonical decision set (closed set):
+
+ALLOW
+
+DENY
+
+DEFER (explicitly requires higher-order decision later)
+
+⚠️ Absence of a decision is treated as DENY.
+
+Context
+
+An immutable input snapshot supplied to a policy.
+
+Includes:
+
+Event reference (from Phase 27)
+
+Actor identity (human/system)
+
+Tenant scope
+
+Resource identifiers
+
+Time & environment markers
+
+Context is observed, never mutated.
+
+Policy Evaluation
+
+A pure function:
+
+(Context, PolicyVersion) → Decision + Evidence
+
+
+Same inputs → same outputs
+
+No I/O
+
+No database mutation
+
+No network calls
+
+2. Authority & Responsibility Boundaries
+
+This step enforces who is allowed to decide.
+
+Allowed to Invoke Policies
+
+Controllers
+
+Application services
+
+Background jobs
+
+CLI commands
+
+❌ Forbidden to Decide
+
+Controllers
+
+Models
+
+Views
+
+Jobs
+
+Event handlers
+
+They may ask; they may not decide.
+
+3. Policy Hierarchy (Conceptual Only)
+
+Policies exist in a strict authority order:
+
+Platform Policy (global, non-overridable)
+
+Tenant Policy (may only restrict further)
+
+Contextual Policy (situational constraints)
+
+Evaluation rule:
+
+Most restrictive outcome wins
+
+No policy may weaken a higher authority decision.
+
+4. Rule Composition Semantics
+
+Rules may be composed using logical operators only:
+
+AND
+
+OR
+
+NOT
+
+Restrictions:
+
+No loops
+
+No recursion
+
+No external calls
+
+No hidden state
+
+Rule composition must be visibly traceable for audit replay.
+
+5. Determinism & Replay Guarantee
+
+Every policy evaluation must be replayable:
+
+Using stored context
+
+Using referenced policy version
+
+Producing the same decision
+
+This guarantees:
+
+Legal defensibility
+
+Forensic audit capability
+
+Deterministic debugging
+
+6. Anti-Patterns (Explicitly Banned)
+
+The following are governance violations:
+
+Hardcoded if/else permission logic
+
+Role checks outside policy layer
+
+Time-based logic without context capture
+
+“Temporary bypass” flags
+
+Silent fallback to allow
+
+Violations must be treated as architectural defects.
+
+7. Step 1 Output (Locked)
+
+After this step:
+
+Policy vocabulary is frozen
+
+Decision authority is centralized
+
+No ambiguity exists between:
+
+Policy
+
+Rule
+
+Configuration
+
+Decision
+
+All future Phase 28 steps must build on this vocabulary.
+
+State After Step 1
+
+Phase: 28 (Active, design-only)
+
+Step 1: ✅ Completed
+
+Execution: ❌ Still prohibited
+
+SWE-1: ❌ Still prohibited
+
+Phase 28 — Step 2
+Policy Evaluation Lifecycle & Control Flow Semantics (Design-Only)
+
+This step defines how a policy is evaluated end-to-end, without implying engines, schemas, or code.
+It formalizes when, in what order, and under which constraints decisions are made.
+
+1. Policy Invocation Triggers (Authoritative)
+
+A policy may only be invoked in response to:
+
+An Event
+(Defined in Phase 27)
+
+A State-Transition Request
+(Before any state mutation)
+
+A Capability Request
+(e.g., “Can actor X perform action Y on resource Z?”)
+
+❌ Policies must never be invoked speculatively or implicitly.
+
+2. Canonical Evaluation Pipeline
+
+The policy lifecycle is a linear, non-branching pipeline:
+
+Trigger
+  ↓
+Context Assembly
+  ↓
+Policy Resolution
+  ↓
+Rule Evaluation
+  ↓
+Decision Resolution
+  ↓
+Audit Evidence Emission
+  ↓
+Control Return (ALLOW / DENY / DEFER)
+
+
+Each stage is mandatory.
+Skipping a stage is a governance violation.
+
+3. Context Assembly Rules
+
+Context must be:
+
+Immutable
+
+Complete
+
+Timestamped
+
+Correlated to the triggering event
+
+Required Context Dimensions
+
+Actor
+
+Identity
+
+Type (human / system)
+
+Authentication state (not credentials)
+
+Tenant
+
+Tenant ID
+
+Tenant tier (if applicable)
+
+Resource
+
+Resource type
+
+Resource identifier
+
+Action
+
+Canonical action name (not HTTP verbs)
+
+Temporal
+
+Request time
+
+Event time (if different)
+
+Missing context dimension ⇒ Immediate DENY
+
+4. Policy Resolution Semantics
+
+Policy resolution determines which policy versions apply.
+
+Resolution order (fixed):
+
+Platform policy (mandatory)
+
+Tenant policy (if exists)
+
+Contextual policy (if applicable)
+
+Rules:
+
+Policies are resolved before evaluation
+
+Resolution itself must be deterministic
+
+Absence of a required policy ⇒ DENY
+
+5. Rule Evaluation Semantics
+
+Rules are evaluated:
+
+In a defined order
+
+Without short-circuiting unless explicitly defined by the policy
+
+Without side effects
+
+Rule outcomes:
+
+TRUE
+
+FALSE
+
+ERROR
+
+Handling:
+
+ERROR is treated as FALSE
+
+Aggregate rule ambiguity ⇒ DENY
+
+6. Decision Resolution Rules
+
+Decision resolution applies authority precedence:
+
+If any policy yields DENY ⇒ DENY
+
+ALLOW is returned only if all applicable policies allow
+
+DEFER is allowed only if explicitly declared by policy
+
+Default decision is DENY.
+
+7. DEFER Semantics (Strict)
+
+DEFER means:
+
+A higher-order or later decision is required
+
+No state change may occur yet
+
+Control returns to caller with an unresolved outcome
+
+Constraints:
+
+DEFER must be explicit
+
+DEFER must reference what is pending
+
+DEFER cannot be auto-resolved
+
+8. Audit Evidence Emission (Non-Optional)
+
+Each evaluation emits an audit record containing:
+
+Trigger reference
+
+Context hash
+
+Policy IDs + versions
+
+Rule outcomes (summarized)
+
+Final decision
+
+Evaluation timestamp
+
+Audit emission must succeed for the decision to be valid.
+
+Audit failure ⇒ DENY
+
+9. Control Return Semantics
+
+After decision:
+
+ALLOW → Caller may proceed
+
+DENY → Caller must abort
+
+DEFER → Caller must halt and await resolution
+
+Policies do not retry, queue, or compensate.
+
+10. Anti-Patterns (Lifecycle Level)
+
+The following are forbidden:
+
+Evaluating policies after state change
+
+Lazy context completion
+
+Silent retries
+
+Implicit allow on timeout
+
+Policy-inside-policy calls
+
+Step 2 Output (Locked)
+
+After this step:
+
+Policy lifecycle is fully deterministic
+
+Invocation boundaries are explicit
+
+Failure behavior is defined
+
+Audit coupling is mandatory
+
+No implementation assumptions exist.
+
+State After Step 2
+
+Phase: 28 (Active, design-only)
+
+Step 2: ✅ Completed
+
+Execution: ❌ Not permitted
+
+SWE-1: ❌ Not permitted
+
+Phase 28 — Step 3
+Policy Versioning, Change Control & Temporal Semantics (Design-Only)
+
+This step defines how policies evolve over time without breaking determinism, audits, or trust.
+It answers the critical question:
+
+“Which rules applied at the moment this decision was made?”
+
+1. Policy Identity Model (Canonical)
+
+Every policy is identified by:
+
+Policy ID (stable, immutable)
+
+Policy Version (monotonic, immutable)
+
+Scope
+
+Platform
+
+Tenant
+
+Contextual
+
+A policy’s meaning is bound to its version, not its name.
+
+2. Version Immutability Rule (Non-Negotiable)
+
+Once a policy version is:
+
+Activated
+
+Used in a decision
+
+It must never change.
+
+Changes require:
+
+A new version
+
+A new activation event
+
+Fresh audit lineage
+
+Retroactive modification is strictly forbidden.
+
+3. Temporal Evaluation Semantics
+
+Policy evaluation is time-aware but time-deterministic.
+
+Rules:
+
+Evaluation time is captured explicitly in context
+
+Policy resolution uses:
+
+“Policy active at evaluation time”
+
+Past decisions:
+
+Always reference historical policy versions
+
+Are never reinterpreted
+
+This enables:
+
+Accurate audits
+
+Legal defensibility
+
+Forensic replay
+
+4. Activation & Deactivation Semantics
+
+Policy lifecycle states (conceptual):
+
+Draft (not evaluable)
+
+Active (evaluable)
+
+Retired (not evaluable, still auditable)
+
+Rules:
+
+Only Active policies may be evaluated
+
+Retired policies remain queryable for audits
+
+Absence of an Active policy ⇒ DENY
+
+5. Change Control Rules
+
+All policy changes must:
+
+Be explicit
+
+Be intentional
+
+Be auditable
+
+Conceptually, every change emits:
+
+Change initiator
+
+Change reason
+
+Effective time
+
+Superseded policy reference
+
+Policy changes are governance events, not configuration tweaks.
+
+6. Tenant Override Constraints (Reinforced)
+
+Tenant-scoped policies:
+
+May introduce stricter conditions
+
+May never relax platform policies
+
+Are evaluated after platform policies
+
+If conflict exists:
+
+Most restrictive outcome wins
+
+This rule is absolute.
+
+7. Rollback Semantics (Safe by Design)
+
+Rollbacks:
+
+Do not modify history
+
+Activate a previous version
+
+Require a new activation event
+
+Effects:
+
+Future decisions use the reactivated version
+
+Past decisions remain unchanged
+
+8. Deprecation Semantics
+
+Deprecation means:
+
+No longer used for new decisions
+
+Still fully visible for audits
+
+Never deleted
+
+Deletion of policies is forbidden.
+
+9. Audit Linkage (Mandatory)
+
+Every decision must link to:
+
+Policy ID
+
+Policy version
+
+Activation timestamp
+
+Evaluation timestamp
+
+This creates a time-anchored chain of custody.
+
+Step 3 Output (Locked)
+
+After this step:
+
+Policy evolution is controlled
+
+Temporal correctness is guaranteed
+
+Audits can always answer “which rule applied?”
+
+No runtime, schema, or storage decisions are implied.
+
+State After Step 3
+
+Phase: 28 (Active, design-only)
+
+Step 3: ✅ Completed
+
+Execution: ❌ Not permitted
+
+SWE-1: ❌ Not permitted
+
+Phase 28 — Step 4
+Failure Modes, Ambiguity Handling & Safety Guarantees (Design-Only)
+
+This step defines what happens when things go wrong — explicitly, deterministically, and safely.
+No decision path is allowed to be undefined.
+
+1. Fundamental Safety Principle (Authoritative)
+
+A policy system must fail closed, not open.
+
+If anything is uncertain, incomplete, or erroneous → DENY.
+
+This principle overrides all convenience, performance, or UX considerations.
+
+2. Canonical Failure Classes
+
+All failures are classified into one of the following:
+
+A. Context Failures
+
+Missing actor
+
+Missing tenant
+
+Missing resource
+
+Missing action
+
+Corrupted or unverifiable context
+
+Outcome:
+→ DENY
+
+B. Policy Resolution Failures
+
+No applicable policy found
+
+Multiple conflicting active policies
+
+Invalid policy scope
+
+Outcome:
+→ DENY
+
+C. Rule Evaluation Failures
+
+Rule error
+
+Exception
+
+Timeout
+
+Non-boolean output
+
+Outcome:
+→ Rule treated as FALSE
+→ Likely leads to DENY
+
+D. Decision Resolution Failures
+
+Mixed ALLOW/DENY without dominance clarity
+
+Unexpected DEFER
+
+Unknown decision state
+
+Outcome:
+→ DENY
+
+E. Audit Failures
+
+Audit emission failure
+
+Evidence persistence failure
+
+Correlation ID missing
+
+Outcome:
+→ DENY
+
+No decision is valid unless auditable.
+
+3. Ambiguity Handling Rules
+
+Ambiguity includes:
+
+Partial context
+
+Conflicting rule results
+
+Underspecified policy logic
+
+Version overlap edge cases
+
+Universal Rule:
+
+Ambiguity = DENY
+
+No ambiguity may be “interpreted” at runtime.
+
+4. Timeout & Resource Exhaustion Semantics
+
+If policy evaluation:
+
+Exceeds allowed evaluation window
+
+Hits resource limits
+
+Is interrupted mid-evaluation
+
+Then:
+
+Evaluation aborts
+
+Decision defaults to DENY
+
+Failure is audited
+
+Retries are forbidden at the policy layer.
+
+5. DEFER Failure Rules
+
+If a DEFER decision:
+
+Cannot be resolved
+
+Is unresolved beyond allowed time
+
+Loses its correlation context
+
+Then:
+
+Final outcome = DENY
+
+Audit must reflect escalation failure
+
+DEFER is not a loophole.
+
+6. Safety Invariants (Must Always Hold)
+
+The following invariants are non-negotiable:
+
+No unaudited ALLOW
+
+No implicit allow paths
+
+No silent bypass
+
+No “temporary” overrides
+
+No emergency flags without audit
+
+Breaking any invariant is a critical governance breach.
+
+7. Failure Transparency
+
+Failures must be:
+
+Visible in audit logs
+
+Correlatable to triggering events
+
+Diagnosable post-facto
+
+However:
+
+Failure reasons exposed to end-users are sanitized
+
+Internal reasoning remains internal
+
+8. Anti-Patterns (Failure-Level)
+
+The following are explicitly forbidden:
+
+“Allow on error”
+
+“Best effort” decisions
+
+Silent fallback policies
+
+Catch-and-continue behavior
+
+Default allow configurations
+
+Step 4 Output (Locked)
+
+After this step:
+
+All failure paths are defined
+
+System behavior under stress is predictable
+
+Security posture is enforceable
+
+No undefined decision states exist
+
+State After Step 4
+
+Phase: 28 (Active, design-only)
+
+Step 4: ✅ Completed
+
+Execution: ❌ Not permitted
+
+SWE-1: ❌ Not permitted
+
+Phase 28 — Step 5
+Audit Evidence Model, Traceability & Compliance Guarantees (Design-Only)
+
+This step binds decisions to evidence.
+A decision that cannot be proven did not happen.
+
+1. Audit as a First-Class Output (Authoritative)
+
+Policy evaluation has two outputs, not one:
+
+Decision
++
+Audit Evidence
+
+
+Both are mandatory.
+Absence of either ⇒ DENY.
+
+2. Canonical Audit Record (Conceptual Model)
+
+Every policy decision must emit an audit record containing:
+
+Identity & Correlation
+
+Audit Record ID
+
+Correlation ID (from Phase 27)
+
+Triggering Event ID
+
+Policy Provenance
+
+Policy ID
+
+Policy version
+
+Policy scope (platform / tenant / contextual)
+
+Context Snapshot (Sanitized)
+
+Actor identifier (hashed or referenced)
+
+Tenant ID
+
+Resource type + identifier
+
+Action
+
+Evaluation timestamp
+
+Evaluation Summary
+
+Rule evaluation outcomes (summarized, not raw logic)
+
+Final decision (ALLOW / DENY / DEFER)
+
+Failure class (if any)
+
+Integrity Markers
+
+Record creation time
+
+Immutability indicator
+
+Chain linkage (previous record hash, if applicable)
+
+This is a conceptual model, not a schema.
+
+3. Traceability Guarantees
+
+The system must always be able to answer:
+
+What happened?
+→ Event (Phase 27)
+
+Why was it allowed or denied?
+→ Policy + Version
+
+Who or what caused it?
+→ Actor + Context
+
+When was the decision made?
+→ Evaluation timestamp
+
+What rule set applied at that time?
+→ Versioned policy reference
+
+If any answer is unavailable → governance failure.
+
+4. Evidence Immutability Rules
+
+Audit evidence must be:
+
+Append-only
+
+Immutable once written
+
+Never overwritten
+
+Never deleted
+
+Corrections are handled by:
+
+New records
+
+Explicit supersession links
+
+5. Audit Failure Coupling (Reinforced)
+
+If audit evidence:
+
+Cannot be generated
+
+Cannot be persisted
+
+Cannot be correlated
+
+Then:
+
+Decision is invalid
+
+Outcome defaults to DENY
+
+Failure itself must be audited (if possible)
+
+6. Privacy & Data Minimization Semantics
+
+Audit evidence must balance:
+
+Compliance
+
+Forensics
+
+Privacy
+
+Rules:
+
+No raw credentials
+
+No secrets
+
+No unnecessary PII
+
+Use references or hashes where possible
+
+Audit logs are not analytics logs.
+
+7. Cross-Phase Linkage
+
+Phase 28 audit semantics explicitly link to:
+
+Phase 27: Event & state change audits
+
+Future Authorization Phases: Permission rationale
+
+Future Workflow Phases: Decision traceability
+
+This phase does not overlap or duplicate Phase 27 — it extends it.
+
+8. Anti-Patterns (Audit-Level)
+
+The following are prohibited:
+
+Logging only decisions without rationale
+
+Mutable audit records
+
+Silent audit failures
+
+Aggregated-only audit logs
+
+“Debug-only” audit modes
+
+Step 5 Output (Locked)
+
+After this step:
+
+Every decision is provable
+
+Policy reasoning is traceable
+
+Compliance posture is defensible
+
+Audit integrity is guaranteed
+
+Phase 28 — Step Completion Summary
+
+Step 1: Canonical vocabulary ✅
+
+Step 2: Evaluation lifecycle ✅
+
+Step 3: Versioning & temporal semantics ✅
+
+Step 4: Failure & ambiguity handling ✅
+
+Step 5: Audit evidence & traceability ✅
+
+Design coverage is complete.
+
+Current State
+
+Phase: 28 (Active, design-only)
+
+Steps: All completed
+
+Execution: ❌ Not permitted
+
+SWE-1: ❌ Not permitted
