@@ -124,6 +124,13 @@
 - **Status**: Completed
 - **Summary**: Identity and actor taxonomy defined, trust boundaries and authority semantics locked, roles, permissions, and delegation semantics defined, authentication vs authorization separation enforced, no code or schema changes made
 
+## Phase 27: Event, State Change & Audit Semantics
+- **Phase Number**: 27
+- **Phase Name**: Event, State Change & Audit Semantics
+- **Nature**: Design-only
+- **Status**: Completed
+- **Summary**: Event taxonomy defined, state vs event semantics locked, audit semantics and evidence rules established, failure, ordering, and ambiguity rules enforced, no code or schema changes made
+
 ## Next Steps
 - Phase 20 has not started
 - Implementation activities must follow defined guardrails
