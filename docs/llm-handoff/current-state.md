@@ -2,9 +2,9 @@
 
 *Last Updated: 2026-01-03*  
 *Governance Version: 1.3.3 LTS*  
-*Phase: 22 - System Boundaries & Invariants (COMPLETED)*
+*Phase: 23 - Capability Taxonomy & Non-Goals (COMPLETED)*
 
-## Governance Status (Phase 22 - Completed & Closed)
+## Governance Status (Phase 23 - Completed & Closed)
 - [x] Implementation readiness criteria established
 - [x] Implementation guardrails defined and documented
 - [x] Capability boundaries verified and documented
@@ -21,6 +21,9 @@
 - [x] System boundaries defined and locked
 - [x] System invariants established
 - [x] Violation handling and STOP conditions defined
+- [x] Capability taxonomy defined and locked
+- [x] Explicit non-goals declared
+- [x] System scope boundaries reinforced
 
 ## Current System State
 
@@ -31,6 +34,8 @@
 - **System Boundaries**: Defined and locked constitutional boundaries for all system behavior
 - **System Invariants**: Established non-negotiable truths that must always remain true
 - **Violation Handling**: STOP conditions and mandatory response procedures established
+- **Capability Taxonomy**: Defined and locked allowed capability domains
+- **Explicit Non-Goals**: Declared permanent refusals to prevent scope creep
 - **Multi-Tenant Architecture**: Path-based tenant resolution with strict data isolation
 - **Authentication System**: Basic email/password authentication with tenant scoping
 - **Pages Management**: Basic CRUD operations for tenant-scoped pages
@@ -127,11 +132,11 @@
 - **Data Protection**: No sensitive data exposure in current implementation
 
 ## Next Phase Status
-**Current Phase**: Phase 22 (System Boundaries & Invariants - COMPLETED)
+**Current Phase**: Phase 23 (Capability Taxonomy & Non-Goals - COMPLETED)
 
-Phase 22 defined and locked constitutional system boundaries and invariants with mandatory violation handling and STOP conditions. No execution phase is currently active.
+Phase 23 defined and locked the system's allowed capability domains and explicit non-goals, reinforcing system scope boundaries. No execution phase is currently active.
 
-**Next phase after 22**: Phase 23 (Implementation Foundation) - NOT yet authorized
+**Next phase after 23**: Phase 24 (Implementation Foundation) - NOT yet authorized
 
 ## Handoff Notes
 - Phase 19 implementation is complete and documented
@@ -218,6 +223,7 @@ Phase 22 defined and locked constitutional system boundaries and invariants with
 - [x] Phase 20: Phase Backbone & Long-Horizon Planning (Completed)
 - [x] Phase 21: Governance Hardening & Drift Control (Completed)
 - [x] Phase 22: System Boundaries & Invariants (Completed)
+- [x] Phase 23: Capability Taxonomy & Non-Goals (Completed)
 - [x] Governance framework: Complete
 - [x] Documentation taxonomy: Complete
 - [x] Implementation guardrails: Complete
@@ -225,17 +231,21 @@ Phase 22 defined and locked constitutional system boundaries and invariants with
 - [x] System capabilities: Documented
 - [x] Governance hardening: Complete
 - [x] System boundaries and invariants: Complete
-- [ ] Phase 23: Not yet authorized (Implementation Foundation)
+- [x] Capabilities and non-goals: Complete
+- [ ] Phase 24: Not yet authorized (Implementation Foundation)
 - [ ] Implementation: Not started (guardrails define allowed activities)
 - [ ] Production deployment: Not ready
 
 ## Important Notes
-- This version represents design and documentation completion through Phase 22
+- This version represents design and documentation completion through Phase 23
 - Phase 20 completed phase backbone and planning framework
 - Phase 21 completed governance hardening and drift prevention controls
 - Phase 22 completed system boundaries and invariants with violation handling
+- Phase 23 completed capability taxonomy and explicit non-goals declaration
 - System boundaries are defined and locked as constitutional governance rules
 - System invariants are established as non-negotiable truths
+- Capability taxonomy defines allowed system behavior domains
+- Explicit non-goals prevent scope creep and feature pressure
 - Violation handling and STOP conditions are mandatory and enforceable
 - No implementation beyond basic CMS foundation exists
 - All governance requirements are satisfied

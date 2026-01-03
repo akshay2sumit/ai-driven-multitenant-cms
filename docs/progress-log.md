@@ -96,6 +96,13 @@
 - **Status**: Completed
 - **Summary**: System boundaries defined, invariants locked, violation handling established, no code or feature changes made
 
+## Phase 23: Capability Taxonomy & Non-Goals
+- **Phase Number**: 23
+- **Phase Name**: Capability Taxonomy & Non-Goals
+- **Nature**: Design-only
+- **Status**: Completed
+- **Summary**: Capability taxonomy defined, explicit non-goals declared, alignment with system boundaries confirmed, no code or feature changes made
+
 ## Next Steps
 - Phase 20 has not started
 - Implementation activities must follow defined guardrails
