@@ -1,0 +1,673 @@
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+System ke andar kaunsa code kahan chal sakta hai — iski clear definition.
+
+Kyun zaroori:
+Security, tenant isolation, aur future AI control ke liye runtime discipline bina ambiguity ke define karna.
+
+Kya bilkul mana hai:
+Code, routes, APIs, AI logic, ya SWE-1 instructions — sab mana.
+
+📐 DESIGN SCOPE (LOCKED)
+
+We will define execution contexts, allowed interactions, and fail-closed rules — documentation only.
+
+Execution Contexts (to be defined)
+
+Authoring Context (admin/editor workflows)
+
+Runtime/Public Context (content delivery)
+
+System/Background Context (jobs, schedulers)
+
+Governance Context (policy enforcement, audits)
+
+▶️ STEP 1 — Event-Free Context Definitions (DESIGN)
+1) Authoring Context
+
+Purpose: Content creation & management
+
+Access: Authenticated, tenant-scoped
+
+Allowed: Drafts, previews, moderation
+
+Forbidden: Public delivery, cross-tenant reads
+
+Fail-Closed: Any ambiguity → deny
+
+2) Runtime/Public Context
+
+Purpose: Read-only delivery
+
+Access: Public or tokenized
+
+Allowed: Published, tenant-isolated reads
+
+Forbidden: Writes, drafts, admin logic
+
+Fail-Closed: If not explicitly published → deny
+
+3) System/Background Context
+
+Purpose: Deterministic maintenance
+
+Access: Internal only
+
+Allowed: Reindexing, cleanup (tenant-aware)
+
+Forbidden: Business decisions, AI autonomy
+
+Fail-Closed: Missing tenant binding → deny
+
+4) Governance Context
+
+Purpose: Policy & audit enforcement
+
+Access: Internal, immutable
+
+Allowed: Validation, evidence, state checks
+
+Forbidden: Content mutation
+
+Fail-Closed: Any mutation attempt → deny
+
+📊 INTERACTION MATRIX (HIGH-LEVEL)
+From \ To	Authoring	Runtime	System	Governance
+Authoring	—	❌	❌	✅ (read)
+Runtime	❌	—	❌	❌
+System	❌	❌	—	✅ (read)
+Governance	❌	❌	❌	—
+
+(❌ = forbidden by default; only explicit allows are valid)
+
+📄 DOCUMENTATION PLACEMENT PLAN (DESIGN)
+
+docs/architecture/runtime-contexts.md (new)
+
+docs/architecture/interaction-matrix.md (new)
+
+Cross-refs in:
+
+docs/documentation/overview.md
+
+docs/llm-handoff/current-state.md (status update at closure only)
+
+⛔ STILL NOT ALLOWED
+
+No code
+
+No routes
+
+No AI features
+
+No SWE-1
+
+🧭 PHASE 28 — STEP 2
+Boundary Enforcement Rules & Fail-Closed Semantics (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Runtime boundaries ko enforce karne ke rules define karenge — taaki system galat jagah galat kaam na kare.
+
+Kyun zaroori:
+Clear boundaries ke bina design sirf theory hota hai. Enforcement rules system ko discipline dete hain.
+
+Kya bilkul mana hai:
+Code likhna, routes banana, middleware implement karna — sab mana.
+
+🔒 CORE PRINCIPLE (LOCKED)
+
+Fail-Closed by Default
+Agar system ko sure nahi hai → request deny.
+
+No implicit allow. No smart guessing. No convenience shortcuts.
+
+🧱 BOUNDARY ENFORCEMENT RULES (AUTHORITATIVE DESIGN)
+Rule 1 — Explicit Context Declaration
+
+Every execution must belong to exactly one context:
+
+Authoring
+
+Runtime/Public
+
+System/Background
+
+Governance
+
+❌ No “mixed” or “unknown” context allowed.
+
+Fail-Closed:
+If context cannot be determined → deny execution.
+
+Rule 2 — Tenant Binding Is Mandatory
+
+Every request/process must have:
+
+A resolved tenant identifier
+
+Bound at the earliest possible boundary
+
+❌ No late binding
+❌ No inferred tenant
+
+Fail-Closed:
+If tenant is missing/ambiguous → deny.
+
+Rule 3 — Write Operations Are Context-Locked
+
+Writes are allowed only in:
+
+Authoring Context
+
+System Context (maintenance only)
+
+❌ Runtime/Public can NEVER write
+❌ Governance can NEVER write
+
+Fail-Closed:
+If write attempted from forbidden context → deny + audit event.
+
+Rule 4 — Read Scope Is Context-Limited
+
+Runtime/Public:
+
+Read published-only
+
+Authoring:
+
+Read drafts + published (tenant-scoped)
+
+System:
+
+Read operational data (tenant-aware)
+
+Governance:
+
+Read metadata & evidence only
+
+❌ Cross-tenant reads are forbidden everywhere.
+
+Fail-Closed:
+If scope exceeds context → deny.
+
+Rule 5 — Context Escalation Is Forbidden
+
+No context may “upgrade” itself:
+
+Runtime → Authoring ❌
+
+System → Governance ❌
+
+Authoring → Governance ❌
+
+Only explicit system transitions (documented later) may change context.
+
+Fail-Closed:
+Any escalation attempt → deny.
+
+Rule 6 — Public Entry Points Are Runtime-Only
+
+Any public-facing entry:
+
+Must execute strictly in Runtime/Public context
+
+Must be read-only
+
+Must be tenant-isolated
+
+❌ No admin logic
+❌ No conditionals that “sometimes write”
+
+Fail-Closed:
+If public entry tries non-runtime behavior → deny.
+
+Rule 7 — Governance Is Observer-Only
+
+Governance context:
+
+Observes
+
+Validates
+
+Records evidence
+
+❌ Never mutates business state
+❌ Never “fixes” data
+
+Fail-Closed:
+Any mutation attempt → deny + audit.
+
+📑 AUDIT & EVIDENCE SEMANTICS (DESIGN)
+
+Every boundary violation attempt must:
+
+Be detectable
+
+Be loggable
+
+Be attributable to a context
+
+(Actual logging mechanism is future phase — not here.)
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+To be created/updated later in this phase:
+
+docs/architecture/runtime-boundary-rules.md (new)
+
+Cross-references to:
+
+Runtime Context definitions (Step 1)
+
+Event & Audit Semantics (Phase 27)
+
+⚠️ No updates to current-state.md yet (only at phase closure).
+
+⛔ STILL NOT ALLOWED
+
+No middleware
+
+No guards
+
+No policy code
+
+No SWE-1 instructions
+
+🧭 PHASE 28 — STEP 3
+Context Transition Semantics (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge ki kab, kaise, aur kaun execution context change kar sakta hai.
+
+Kyun zaroori:
+Agar context transition uncontrolled ho:
+
+Runtime admin ban jaata hai
+
+Security bypass hoti hai
+
+Tenant isolation toot jaata hai
+
+Is step ka goal hai: context change = rare, explicit, auditable.
+
+Kya bilkul mana hai:
+Automatic upgrades, silent switches, ya “smart guessing”.
+
+🔒 CORE TRANSITION PRINCIPLE (LOCKED)
+
+Contexts do NOT evolve — they TRANSITION explicitly.
+
+No implicit upgrades
+
+No inferred permissions
+
+No background magic
+
+A context transition is a governed event, not a side-effect.
+
+🧱 ALLOWED CONTEXT TRANSITIONS (DESIGN)
+
+Only the following transitions are conceptually allowed.
+Everything else is forbidden by default.
+
+1️⃣ Authoring → Runtime (Publish Boundary)
+
+Meaning:
+Content authored becomes publicly readable.
+
+Characteristics:
+
+One-way
+
+Explicit user intent
+
+Versioned / state-based
+
+Tenant-bound
+
+Not allowed:
+
+Runtime → Authoring
+
+Runtime editing drafts
+
+Fail-Closed:
+If publish conditions are incomplete → deny transition.
+
+2️⃣ System → Runtime (Materialization Boundary)
+
+Meaning:
+System prepares optimized, read-only artifacts.
+
+Characteristics:
+
+Deterministic
+
+No business decision-making
+
+Tenant-aware
+
+No visibility change
+
+Not allowed:
+
+System deciding “what should be published”
+
+System editing author intent
+
+Fail-Closed:
+If system lacks explicit scope → deny.
+
+3️⃣ Authoring → System (Maintenance Invocation)
+
+Meaning:
+User-triggered background work (e.g., reindex).
+
+Characteristics:
+
+User-initiated
+
+Narrow scope
+
+Time-bounded
+
+Not allowed:
+
+System-wide actions without approval
+
+Cross-tenant invocation
+
+Fail-Closed:
+If invocation scope is broad/ambiguous → deny.
+
+4️⃣ Any → Governance (Observation Only)
+
+Meaning:
+Execution emits evidence for audit/validation.
+
+Characteristics:
+
+Passive
+
+Read-only
+
+Non-blocking (except for enforcement)
+
+Not allowed:
+
+Governance triggering business actions
+
+Governance mutating state
+
+Fail-Closed:
+If governance attempts mutation → deny.
+
+🚫 EXPLICITLY FORBIDDEN TRANSITIONS
+
+These can never exist, now or in the future:
+
+Runtime → Authoring ❌
+
+Runtime → System ❌
+
+Governance → Any ❌
+
+Authoring → Governance (as controller) ❌
+
+Public-triggered System escalation ❌
+
+These are architectural invariants, not implementation choices.
+
+📐 TRANSITION REQUIREMENTS (DESIGN)
+
+Every allowed transition must satisfy:
+
+Explicit Trigger
+
+Human action or documented system rule
+
+Declared Source & Target Context
+
+Tenant Continuity
+
+Tenant ID must remain identical
+
+Audit Emission
+
+Evidence that transition occurred
+
+Reversibility Rules
+
+If reversible, must be explicit
+
+If irreversible (e.g., publish), must be documented
+
+Fail-Closed:
+Missing any requirement → deny transition.
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Planned docs for this step:
+
+docs/architecture/context-transitions.md (new)
+
+Cross-references to:
+
+Runtime Contexts (Step 1)
+
+Boundary Enforcement Rules (Step 2)
+
+Event & Audit Semantics (Phase 27)
+
+No file creation yet — design only.
+
+⛔ STILL NOT ALLOWED
+
+No workflow engines
+
+No background jobs
+
+No queue logic
+
+No SWE-1 instructions
+
+🧭 PHASE 28 — STEP 4
+Failure, Ordering & Ambiguity Rules (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge ki agar:
+
+koi cheez fail ho jaaye,
+
+events/requests galat order me aa jaayen,
+
+ya context / tenant / intent clear na ho,
+
+to system kaise react kare.
+
+Core intent:
+System kabhi bhi “guess” na kare.
+Confusion ka jawab hamesha DENY + RECORD ho.
+
+Kya bilkul mana hai:
+Silent retries, smart auto-fix, ya background assumptions.
+
+🔒 CORE SAFETY PRINCIPLE (LOCKED)
+
+Ambiguity is a failure condition, not a usability problem.
+
+If the system is unsure → it must stop.
+
+🧱 FAILURE SEMANTICS (DESIGN)
+Failure Class A — Context Resolution Failure
+
+Examples:
+
+Context not declared
+
+Multiple contexts inferred
+
+Context mismatch with entry point
+
+System Response:
+
+Deny execution immediately
+
+Emit audit evidence
+
+No fallback
+
+Failure Class B — Tenant Resolution Failure
+
+Examples:
+
+Missing tenant ID
+
+Conflicting tenant sources
+
+Late tenant binding attempt
+
+System Response:
+
+Deny execution
+
+Do not retry
+
+Record violation
+
+Failure Class C — Boundary Violation
+
+Examples:
+
+Runtime attempting write
+
+Governance attempting mutation
+
+Cross-context access
+
+System Response:
+
+Hard deny
+
+Mandatory audit emission
+
+Mark as policy violation
+
+Failure Class D — Transition Preconditions Not Met
+
+Examples:
+
+Publish without approval
+
+System job without scope
+
+Missing invariants
+
+System Response:
+
+Transition denied
+
+State remains unchanged
+
+Explicit failure surfaced
+
+⏱️ ORDERING RULES (DESIGN)
+Rule 1 — Causality First
+
+Transitions must respect:
+
+State order
+
+Version order
+
+Approval order
+
+Fail-Closed:
+Out-of-order request → deny.
+
+Rule 2 — Idempotency Is Explicit
+
+System must know:
+
+Is this repeat safe?
+
+Or forbidden?
+
+❌ No silent deduplication
+❌ No inferred retries
+
+Rule 3 — No Temporal Guessing
+
+System must not assume:
+
+“This probably already happened”
+
+“This will happen soon”
+
+Fail-Closed:
+Temporal ambiguity → deny.
+
+❓ AMBIGUITY HANDLING (DESIGN)
+Ambiguity Sources
+
+Multiple tenant signals
+
+Partial state
+
+Mixed context signals
+
+Unclear caller intent
+
+Unified Response Pattern
+
+Stop execution
+
+Preserve current state
+
+Emit evidence
+
+Require explicit retry with clarity
+
+🧾 AUDIT & EVIDENCE REQUIREMENTS (DESIGN)
+
+Every failure must be:
+
+Attributable (which context)
+
+Classifiable (which rule)
+
+Tenant-bound
+
+Non-destructive
+
+(Actual storage/logging is out of scope for this phase.)
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Planned docs to be finalized in this phase:
+
+docs/architecture/failure-and-ambiguity-rules.md (new)
+
+Cross-links to:
+
+Runtime Contexts (Step 1)
+
+Boundary Enforcement (Step 2)
+
+Context Transitions (Step 3)
+
+Audit Semantics (Phase 27)
+
+⛔ STILL NOT ALLOWED
+
+No retries
+
+No queues
+
+No compensating transactions
+
+No SWE-1 instructions
