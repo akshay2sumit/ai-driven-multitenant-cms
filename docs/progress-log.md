@@ -152,8 +152,15 @@
 - **Status**: Completed
 - **Summary**: Identity taxonomy defined, authentication semantics established, trust boundaries documented, fail-closed authentication rules created, all documentation completed and audited in single cycle, phase now closed
 
+## Phase 31: Session, Token & Credential Lifecycle Semantics
+- **Phase Number**: 31
+- **Phase Name**: Session, Token & Credential Lifecycle Semantics
+- **Nature**: Design-only, documentation-only
+- **Status**: Completed
+- **Summary**: Credential lifecycle defined, token semantics established, session continuity documented, fail-closed session rules created, all documentation completed and audited in single cycle, phase now closed
+
 ## Next Steps
-- Design and documentation phases completed through Phase 30
+- Design and documentation phases completed through Phase 31
 - No execution phase is currently active
 - All documentation remains synchronized and consistent
 - Governance requirements are fully satisfied
