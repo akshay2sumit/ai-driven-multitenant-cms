@@ -1,0 +1,773 @@
+Phase 33 — Data Ownership, Mutation & Consistency Rules (DESIGN-ONLY)
+
+This phase defines:
+
+Who owns data
+
+Who may mutate it
+
+Tenant isolation at the data layer
+
+Soft vs hard delete semantics
+
+Consistency guarantees for writes
+
+🧭 PHASE 33 — Data Ownership, Mutation & Consistency Rules
+
+STATUS: ACTIVE (DESIGN-ONLY)
+EXECUTION: ❌ LOCKED
+SWE-1: ❌ NOT AUTHORIZED
+
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Is phase me hum define karenge data kis ka hai, kaun use badal sakta hai, aur multi-tenant system me consistency ka matlab kya hai.
+
+Kyun zaroori:
+Agar data ownership clear nahi hoti:
+
+Tenant leakage hota hai
+
+Authorization meaningless ho jaata hai
+
+Bugs database level par permanent ho jaate hain
+
+Kya bilkul mana hai:
+DB schemas, migrations, SQL, ORM rules, ya koi code — sab mana.
+
+📐 PHASE 33 — STEP 1
+Data Ownership Model & Tenant Isolation (DESIGN)
+🔒 CORE DATA PRINCIPLE (LOCKED)
+
+Every piece of data has exactly one owner and one tenant.
+
+Ownership is explicit
+
+Tenant binding is mandatory
+
+No “shared by accident” data
+
+🧱 DATA OWNERSHIP DEFINITIONS (AUTHORITATIVE)
+1️⃣ Data Owner
+
+The logical authority responsible for a data entity.
+
+Rules:
+
+Owner is always an identity or system role
+
+Ownership does NOT imply mutation rights
+
+Ownership is immutable once set (unless explicitly transferred)
+
+2️⃣ Tenant Ownership
+
+Every data entity MUST:
+
+Belong to exactly one tenant
+
+Never be visible across tenants by default
+
+Cross-tenant data requires explicit governance rules (not assumed here).
+
+3️⃣ System-Owned Data
+
+Some data may be:
+
+Owned by the system
+
+Still tenant-bound unless explicitly global
+
+Examples (conceptual):
+
+Audit logs
+
+System configuration
+
+🔐 TENANT ISOLATION RULES (LOCKED)
+
+Tenant ID is mandatory on all data
+
+Actor tenant MUST match data tenant
+
+Any mismatch → DENY
+
+No fallback. No inference.
+
+🚫 EXPLICITLY FORBIDDEN OWNERSHIP PATTERNS
+
+❌ Implicit ownership (“creator owns everything”)
+
+❌ Cross-tenant reads
+
+❌ Cross-tenant writes
+
+❌ Global tables without governance justification
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Ownership metadata must be:
+
+Explicit
+
+Auditable
+
+Immutable
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Planned Phase 33 docs (to be written later):
+
+docs/architecture/data-ownership.md
+
+Cross-refs to:
+
+Phase 29 permissions
+
+Phase 30 identity
+
+Phase 32 request semantics
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No DB tables
+
+No schema design
+
+No migrations
+
+No SWE-1
+
+🧭 PHASE 33 — STEP 2
+Data Mutation Rules & Authority Boundaries (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge data kaun badal sakta hai, kis authority ke under, aur kis situation me mutation bilkul mana hai.
+
+Golden rule:
+
+Ownership ≠ mutation authority
+
+Jo data ka owner hai, woh zaroori nahi ki use badalne ka adhikaar bhi rakhta ho.
+
+Kya bilkul mana hai:
+Hidden writes, indirect mutation, ya “system khud adjust kar lega”.
+
+🔒 CORE MUTATION PRINCIPLE (LOCKED)
+
+Every data mutation must be explicitly authorized, contextual, and auditable.
+
+Mutation bina request ke nahi hoti
+
+Mutation bina authorization ke nahi hoti
+
+Mutation bina context ke nahi hoti
+
+🧱 MUTATION AUTHORITY MODEL (AUTHORITATIVE)
+1️⃣ Mutation Authority
+
+Mutation authority defines:
+
+Kaun data badal sakta hai
+
+Kis context me
+
+Kis type ka mutation
+
+Rules:
+
+Authority is capability-based (Phase 29)
+
+Authority is context-bound (Phase 28)
+
+Authority is tenant-bound (Phase 33)
+
+2️⃣ Separation of Concerns
+Concept	Meaning
+Ownership	Responsibility & accountability
+Mutation Authority	Permission to change
+Execution	Actual mutation action
+
+In teenon ko kabhi mix nahi kiya jaata.
+
+🟥 TYPES OF DATA MUTATION (SEMANTIC)
+A) Create
+
+New data entity creation
+
+Requires:
+
+Explicit command
+
+Authorization
+
+Tenant binding
+
+B) Update
+
+Modification of existing data
+
+Requires:
+
+Existing entity
+
+Valid mutation authority
+
+State compatibility
+
+C) Delete
+
+Removal of data (semantic)
+
+Two categories:
+
+Soft delete
+
+Hard delete (defined in Step 3)
+
+🔐 MUTATION CONSTRAINT RULES (LOCKED)
+Rule 1 — Context Validity
+
+Mutation allowed only in valid contexts
+
+Example:
+
+Runtime/Public → ❌ mutation
+
+Authoring → ✔ mutation
+
+Rule 2 — State Compatibility
+
+Data state must allow mutation
+
+Example:
+
+Archived → ❌ update
+
+Draft → ✔ update
+
+Rule 3 — Tenant Continuity
+
+Actor tenant MUST equal data tenant
+
+Any mismatch → deny
+
+Rule 4 — Explicit Intent
+
+Mutation must be initiated via:
+
+Command (Phase 32)
+
+Queries can never mutate data
+
+Rule 5 — No Cascading Mutations
+
+One command = one mutation intent
+
+Side effects must be explicit
+
+🚫 EXPLICITLY FORBIDDEN MUTATION PATTERNS
+
+❌ Mutation during validation
+
+❌ Mutation during query
+
+❌ Implicit mutation on read
+
+❌ Cross-tenant mutation
+
+❌ Auto-fix mutation
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Every mutation must emit:
+
+Data entity
+
+Mutation type (create/update/delete)
+
+Actor
+
+Authority used
+
+Context
+
+Before/after state (conceptual)
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 33 docs impacted (to be written later):
+
+docs/architecture/data-mutation-rules.md
+
+Cross-refs to:
+
+Data ownership model
+
+Command semantics
+
+Permission semantics
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No DB triggers
+
+No cascade rules
+
+No schema-level enforcement
+
+No SWE-1
+
+🧭 PHASE 33 — STEP 3
+Soft vs Hard Delete, Retention & Data Lifecycle Semantics (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge data delete ka matlab kya hota hai, kab data sirf chhupaya jaata hai (soft delete), kab hamesha ke liye mita diya jaata hai (hard delete), aur data ka poora lifecycle kaise control hota hai.
+
+Golden rule:
+
+Deletion is a lifecycle transition, not an erasure by default.
+
+Delete bolna ≠ destroy bolna.
+
+Kya bilkul mana hai:
+Instant permanent delete by default, silent deletion, ya bina audit ke cleanup.
+
+🔒 CORE DELETION PRINCIPLE (LOCKED)
+
+Data must be recoverable unless there is an explicit, authorized reason to destroy it.
+
+Safety > convenience
+
+Auditability > cleanliness
+
+🧱 DATA LIFECYCLE STATES (AUTHORITATIVE)
+
+Every data entity conceptually moves through:
+
+Created → Active → (Soft Deleted) → (Archived) → (Hard Deleted)
+
+
+Not all entities must support all states, but transitions must be explicit.
+
+🟨 SOFT DELETE (SEMANTIC DEFINITION)
+Meaning
+
+Soft delete means:
+
+Data is logically removed
+
+Data is not visible in normal queries
+
+Data still exists physically
+
+Data can be restored
+
+Rules
+
+Requires explicit delete command
+
+Requires delete authority (Phase 29)
+
+Must be tenant-bound
+
+Must be auditable
+
+Soft-deleted data:
+
+❌ Cannot be mutated
+
+❌ Cannot be acted upon
+
+✔ May be restored (if allowed)
+
+🟥 HARD DELETE (SEMANTIC DEFINITION)
+Meaning
+
+Hard delete means:
+
+Data is permanently destroyed
+
+Recovery is not possible
+
+All references must be invalidated
+
+Rules
+
+NEVER default
+
+Requires:
+
+Explicit command
+
+Higher authority
+
+Governance justification (conceptual)
+
+Must respect retention rules
+
+Must be auditable (before destruction)
+
+🔐 RETENTION SEMANTICS (LOCKED)
+
+Retention defines:
+
+Minimum time data must exist
+
+Maximum time data may exist
+
+Rules:
+
+Soft-deleted data must respect retention windows
+
+Hard delete before minimum retention → ❌ forbidden
+
+Retention rules are tenant-aware
+
+🔁 RESTORATION SEMANTICS
+
+Only soft-deleted data may be restored
+
+Restoration requires:
+
+Explicit command
+
+Authorization
+
+State compatibility
+
+Restoration does NOT:
+
+Restore old permissions
+
+Restore expired trust
+
+🚫 EXPLICITLY FORBIDDEN DELETE BEHAVIOURS
+
+❌ Delete during query
+
+❌ Silent cascade delete
+
+❌ Hard delete without audit
+
+❌ Cross-tenant delete
+
+❌ Auto-cleanup without policy
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Deletion lifecycle must emit:
+
+Entity ID
+
+Tenant
+
+Delete type (soft/hard)
+
+Authority used
+
+Timestamp
+
+Reason (if hard delete)
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 33 docs impacted (to be written later):
+
+docs/architecture/data-lifecycle.md
+
+Cross-refs to:
+
+Data ownership
+
+Mutation rules
+
+Command semantics
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No DB delete flags
+
+No retention jobs
+
+No cleanup scripts
+
+No SWE-1
+
+🧭 PHASE 33 — STEP 4
+Consistency Guarantees, Transactions & Multi-Entity Changes (SEMANTIC)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge jab ek se zyada data entities ek saath badalti hain, to system consistency kaise maintain karta hai, aur kab system ko poora operation fail kar dena chahiye.
+
+Golden rule:
+
+Partial truth is worse than no truth.
+
+Aadha data badal gaya, aadha nahi — ye system ke liye sabse dangerous state hoti hai.
+
+Kya bilkul mana hai:
+DB transactions, ACID terms, SQL locks, ya koi implementation detail.
+
+🔒 CORE CONSISTENCY PRINCIPLE (LOCKED)
+
+Multi-entity changes must be all-or-nothing at the semantic level.
+
+Either the intent fully succeeds
+
+Or the system behaves as if it never happened
+
+No “best effort” consistency.
+
+🧱 SINGLE vs MULTI-ENTITY MUTATION (AUTHORITATIVE)
+1️⃣ Single-Entity Mutation
+
+One data entity
+
+One mutation intent
+
+Simple consistency expectation
+
+Rule:
+
+If mutation fails → entity remains unchanged
+
+2️⃣ Multi-Entity Mutation
+
+One command
+
+Multiple related entities
+
+One semantic intent
+
+Examples (conceptual):
+
+Publish page + update index
+
+Delete user + revoke access artifacts
+
+Create content + assign ownership metadata
+
+🔁 SEMANTIC TRANSACTION BOUNDARY
+
+A command defines a semantic transaction boundary.
+
+Meaning:
+
+All mutations triggered by one command belong to one boundary
+
+Boundary success requires:
+
+All mutations succeed
+
+All constraints satisfied
+
+If any mutation fails → entire command fails.
+
+🔐 FAILURE & ROLLBACK SEMANTICS (LOCKED)
+
+System MUST NOT expose partial state
+
+System MUST abort on:
+
+Authorization failure
+
+State incompatibility
+
+Tenant mismatch
+
+Retention violation
+
+Rollback is conceptual, not technical here.
+
+🧭 CONSISTENCY GUARANTEE LEVELS (SEMANTIC)
+A) Strong Consistency (Default)
+
+Post-command reads reflect full mutation
+
+Used for:
+
+User-facing state
+
+Authorization-relevant data
+
+B) Deferred Consistency (Explicit Only)
+
+Some secondary effects may lag
+
+Allowed only when:
+
+Explicitly documented
+
+Not used for decisions
+
+Example:
+
+Analytics counters
+
+🚫 EXPLICITLY FORBIDDEN CONSISTENCY PATTERNS
+
+❌ Partial success exposure
+
+❌ Silent retries that change outcome
+
+❌ Multi-command mutation for one intent
+
+❌ Cross-tenant consistency boundaries
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+For multi-entity commands, audit must record:
+
+Command intent
+
+Entities involved
+
+Consistency level
+
+Outcome (success / aborted)
+
+Reason for abort (if any)
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 33 docs impacted (to be written later):
+
+docs/architecture/data-consistency.md
+
+Cross-refs to:
+
+Mutation rules
+
+Command semantics
+
+Query consistency (Phase 32)
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No DB transactions
+
+No sagas
+
+No eventual consistency mechanisms
+
+No SWE-1
+
+🧭 PHASE 33 — STEP 5
+Documentation Placement & Phase 33 Closure Plan (DESIGN)
+🧠 SIMPLE HINDI SUMMARY
+
+Is step me hum lock kar rahe hain:
+
+Phase 33 ke final documentation files
+
+Unki exact location
+
+Phase ko ek hi cycle me execute + close karne ka rule
+
+Taaki:
+
+Aaj hi saari design/documentation khatam ho
+
+Kal coding confidently start ho
+
+📁 AUTHORITATIVE DOCUMENTATION PLACEMENT (LOCKED)
+
+All Phase 33 outputs go ONLY under:
+
+docs/architecture/
+
+
+❌ governance/
+❌ planning/
+❌ execution folders
+
+📄 FILES TO BE CREATED (AT EXECUTION TIME)
+1️⃣ data-ownership.md
+
+Contains:
+
+Data ownership definition
+
+Owner vs tenant distinction
+
+System-owned vs actor-owned data
+
+Forbidden ownership patterns
+
+2️⃣ data-mutation-rules.md
+
+Contains:
+
+Mutation authority vs ownership
+
+Create / Update / Delete semantics
+
+Context & permission constraints
+
+Forbidden mutation patterns
+
+3️⃣ data-lifecycle.md
+
+Contains:
+
+Lifecycle states
+
+Soft delete vs hard delete
+
+Retention semantics
+
+Restoration rules
+
+4️⃣ data-consistency.md
+
+Contains:
+
+Single vs multi-entity mutations
+
+Semantic transaction boundaries
+
+Consistency guarantees
+
+Abort & rollback semantics (conceptual)
+
+🔗 REQUIRED CROSS-REFERENCES (MANDATORY)
+
+Each Phase 33 document MUST reference:
+
+Phase 29 — Permission semantics
+
+Phase 30 — Identity & trust
+
+Phase 32 — Command & query semantics
+
+Other Phase 33 docs by filename
+
+No duplication of earlier phase content.
+
+🧾 PHASE 33 CLOSURE CONDITIONS
+
+Phase 33 can be CLOSED only when:
+
+All 4 architecture docs are written
+
+Design-only (no code, no schemas)
+
+ONE clean commit only
+
+docs/llm-handoff/current-state.md updated
+
+docs/progress-log.md updated
+
+Single ZIP uploaded and audited
