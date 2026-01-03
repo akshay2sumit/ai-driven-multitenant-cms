@@ -110,6 +110,13 @@
 - **Status**: Completed
 - **Summary**: Canonical domain vocabulary defined, concept relationships established, concept invariants locked, no code or schema changes made
 
+## Phase 25: Data Ownership & Lifecycle Semantics
+- **Phase Number**: 25
+- **Phase Name**: Data Ownership & Lifecycle Semantics
+- **Nature**: Design-only
+- **Status**: Completed
+- **Summary**: Data ownership taxonomy defined, lifecycle stages established, immutability and deletion semantics locked, no code or schema changes made
+
 ## Next Steps
 - Phase 20 has not started
 - Implementation activities must follow defined guardrails
