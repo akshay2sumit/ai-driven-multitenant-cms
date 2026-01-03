@@ -671,3 +671,111 @@ No queues
 No compensating transactions
 
 No SWE-1 instructions
+
+📁 AUTHORITATIVE DOCUMENTATION PLACEMENT (LOCKED)
+✅ PRIMARY ARCHITECTURE DOCS (NEW)
+
+All Phase 28 outputs belong ONLY here:
+
+docs/architecture/
+
+Files to be created (design-only phase output mapping):
+
+runtime-contexts.md
+
+Authoring / Runtime / System / Governance definitions
+
+Purpose, access rules, fail-closed semantics
+
+runtime-boundary-rules.md
+
+Boundary enforcement rules
+
+Write/read constraints
+
+Tenant binding invariants
+
+context-transitions.md
+
+Allowed transitions
+
+Forbidden transitions
+
+Preconditions & invariants
+
+failure-and-ambiguity-rules.md
+
+Failure classes
+
+Ordering rules
+
+Ambiguity handling
+
+🔗 REQUIRED CROSS-REFERENCES (NO CONTENT DUPLICATION)
+
+These files must reference Phase 28 docs, not re-explain them:
+
+docs/documentation/overview.md
+
+Add Phase 28 architecture section links
+
+Phase 27 audit/event docs
+
+Reference failure & evidence semantics (already defined)
+
+⚠️ No changes yet — actual edits happen only when execution is authorized.
+
+📌 WHAT MUST NOT BE CREATED
+
+❌ No files in governance/
+❌ No files in planning/
+❌ No ADRs (this phase defines rules, not decisions)
+❌ No updates to current-state.md yet
+
+🧾 PHASE 28 CLOSURE CONDITIONS (DESIGN-ONLY)
+
+Phase 28 can be CLOSED only when:
+
+All 4 architecture documents are:
+
+Written
+
+Internally consistent
+
+Cross-referenced correctly
+
+No code, tests, or routes are added
+
+Documentation audit passes
+
+A single clean commit contains:
+
+Only the above docs
+
+No unrelated changes
+
+docs/llm-handoff/current-state.md is updated
+
+Phase 28 marked COMPLETED
+
+Next phase unlocked (but not started)
+
+(All of the above requires future authorization.)
+
+🔐 MODE & AUTHORIZATION CHECK
+
+Current mode: DESIGN-ONLY
+
+Writing files: ❌ NOT YET AUTHORIZED
+
+SWE-1: ❌ NOT AUTHORIZED
+
+✅ PHASE 28 — DESIGN COMPLETE
+
+All design steps (1–5) for Phase 28 are now conceptually complete.
+
+Nothing more is allowed in this phase without:
+
+Switching mode
+
+Explicit authorization
