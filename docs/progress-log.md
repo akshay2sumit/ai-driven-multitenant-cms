@@ -89,6 +89,13 @@
 - **Description**: Governance master prompts hardened with ZIP enforcement and mode declarations
 - **Summary**: Governance master prompts hardened, ZIP ingestion gates enforced, phase boundaries and mode enforcement added, meta-governance role locked and constrained, no code or feature changes made
 
+## Phase 22: System Boundaries & Invariants
+- **Phase Number**: 22
+- **Phase Name**: System Boundaries & Invariants
+- **Nature**: Design-only
+- **Status**: Completed
+- **Summary**: System boundaries defined, invariants locked, violation handling established, no code or feature changes made
+
 ## Next Steps
 - Phase 20 has not started
 - Implementation activities must follow defined guardrails
