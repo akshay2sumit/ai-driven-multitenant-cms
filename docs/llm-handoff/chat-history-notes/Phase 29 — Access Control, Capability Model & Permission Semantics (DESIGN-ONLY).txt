@@ -1,0 +1,916 @@
+Phase 29 — Access Control, Capability Model & Permission Semantics (DESIGN-ONLY)
+📐 PHASE 29 — STEP 1
+Capability Taxonomy & Core Access Concepts (DESIGN)
+🔒 CORE ACCESS PRINCIPLE (LOCKED)
+
+Access is capability-based, not role-based.
+
+Capabilities define what can be done
+
+Roles are collections of capabilities
+
+Permissions are evaluated at runtime using:
+
+Context (Phase 28)
+
+Tenant scope
+
+Capability presence
+
+No implicit access. No inheritance by assumption.
+
+🧱 DEFINITIONS (AUTHORITATIVE)
+1️⃣ Actor
+
+Any entity that can request an action:
+
+Human user
+
+System process
+
+Future AI operator (controlled)
+
+Actors do not have permissions directly.
+
+2️⃣ Capability
+
+A single, atomic right to perform a specific class of action.
+
+Examples (conceptual, not exhaustive):
+
+content.read
+
+content.write
+
+content.publish
+
+tenant.admin
+
+system.maintain
+
+Rules:
+
+Capabilities are tenant-scoped
+
+Capabilities are context-aware
+
+Capabilities are explicitly granted
+
+No wildcard capabilities
+
+3️⃣ Role
+
+A named bundle of capabilities.
+
+Rules:
+
+Roles have no logic
+
+Roles do not bypass context rules
+
+Roles do not bypass tenant isolation
+
+Removing a capability from a role immediately reduces power
+
+4️⃣ Permission Evaluation
+
+A runtime decision answering:
+
+“Is this actor allowed to perform this action here and now?”
+
+Inputs:
+
+Actor
+
+Capability
+
+Execution context (Phase 28)
+
+Tenant binding
+
+Resource state (draft/published/etc.)
+
+🧬 CAPABILITY TAXONOMY (DESIGN)
+
+Capabilities are grouped by domain, not by UI or code layer.
+
+Content Domain
+
+content.read
+
+content.write
+
+content.edit
+
+content.publish
+
+content.archive
+
+Tenant Domain
+
+tenant.view
+
+tenant.configure
+
+tenant.admin
+
+System Domain
+
+system.observe
+
+system.maintain
+
+system.configure (very restricted)
+
+Governance Domain
+
+governance.observe
+
+governance.audit
+
+❌ No capability implies cross-tenant access.
+
+🚫 EXPLICIT NON-GOALS (LOCKED)
+
+❌ No super-admin bypass
+
+❌ No implicit role inheritance
+
+❌ No “owner can do everything” assumption
+
+❌ No AI self-granted capabilities
+
+🔐 FAIL-CLOSED ACCESS RULE
+
+If capability cannot be proven → access is denied.
+
+Missing capability → deny
+
+Ambiguous capability → deny
+
+Context mismatch → deny
+
+Tenant mismatch → deny
+
+No soft failures.
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Planned Phase 29 docs (to be finalized later):
+
+docs/architecture/capability-model.md
+
+docs/architecture/permission-semantics.md
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No authentication mechanisms
+
+No role assignment UI
+
+No policy engines
+
+No SWE-1
+
+🧭 PHASE 29 — STEP 2
+Role Composition & Tenant-Scoped Assignment Rules (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge roles kaise bante hain, kaun assign kar sakta hai, aur tenant boundaries ke andar ye kaise kaam karte hain.
+
+Kyun zaroori:
+Capabilities akeli hoti hain; roles unko safe bundles me convert karte hain.
+Galat role rules = security disaster.
+
+Kya bilkul mana hai:
+Global admin, cross-tenant roles, ya implicit power.
+
+🔒 CORE ROLE PRINCIPLE (LOCKED)
+
+Roles are tenant-scoped capability bundles with no authority of their own.
+
+Roles never bypass:
+
+Capabilities
+
+Context rules (Phase 28)
+
+Tenant isolation
+
+Roles are data, not logic
+
+🧱 ROLE COMPOSITION RULES (AUTHORITATIVE)
+Rule 1 — Roles Contain Only Capabilities
+
+A role is a named list of capabilities
+
+No conditions, no logic, no workflows
+
+❌ Roles MUST NOT:
+
+Check context
+
+Inspect resources
+
+Perform decisions
+
+All decisions happen in permission evaluation, not in roles.
+
+Rule 2 — Tenant-Scoped Roles Only
+
+Every role belongs to exactly one tenant
+
+Same role name in two tenants ≠ same authority
+
+❌ No global roles
+❌ No shared role registry across tenants
+
+Fail-Closed:
+If role tenant ≠ actor tenant → deny.
+
+Rule 3 — Explicit Assignment Only
+
+Roles are assigned explicitly to actors
+
+Assignment requires:
+
+Assigner identity
+
+Tenant match
+
+Audit emission
+
+❌ No automatic role assignment
+❌ No inheritance by creation
+
+Rule 4 — Least-Privilege Composition
+
+Roles should contain the minimum necessary capabilities
+
+“Convenience roles” are discouraged
+
+If a role grows too powerful → split it.
+
+Rule 5 — No Role Escalation
+
+Actors cannot:
+
+Assign roles they do not hold authority for
+
+Grant higher privilege than their own
+
+❌ No self-promotion
+❌ No circular grants
+
+Fail-Closed:
+If escalation detected → deny + audit.
+
+🧬 ROLE TYPES (SEMANTIC, NOT IMPLEMENTATION)
+1️⃣ Functional Roles
+
+Example: Editor, Publisher
+
+Content-focused
+
+Limited to content capabilities
+
+2️⃣ Administrative Roles
+
+Example: Tenant Administrator
+
+Tenant configuration capabilities
+
+Cannot bypass governance
+
+3️⃣ System Roles
+
+Assigned to system processes
+
+Narrow, deterministic capabilities
+
+Never human-assignable
+
+4️⃣ Governance Roles
+
+Observation & audit only
+
+No mutation powers
+
+🔐 ASSIGNMENT INVARIANTS (LOCKED)
+
+For any role assignment:
+
+Same tenant
+
+Assigner has authority
+
+Capability subset rule holds
+
+Audit evidence emitted
+
+If any invariant fails → deny.
+
+🚫 EXPLICITLY FORBIDDEN
+
+❌ Cross-tenant role grants
+
+❌ Global super-admin role
+
+❌ Hidden default roles
+
+❌ AI-created roles
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Planned Phase 29 docs (expanded):
+
+docs/architecture/capability-model.md
+
+docs/architecture/role-composition.md
+
+docs/architecture/permission-semantics.md
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No DB schema
+
+No role tables
+
+No UI
+
+No SWE-1
+
+🧭 PHASE 29 — STEP 3
+Permission Evaluation Semantics (Context × Capability × State) — DESIGN
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge permission ka final decision kaise nikalta hai — sirf role dekh ke nahi, balki:
+
+Context (Phase 28) × Capability (Phase 29) × Resource State
+
+Kyun zaroori:
+Same capability har jagah valid nahi hoti.
+Example:
+
+content.write authoring me allowed
+
+content.write runtime/public me hamesha deny
+
+Is step ka kaam hai yeh confusion khatam karna.
+
+Kya bilkul mana hai:
+Shortcut rules, implicit allow, ya UI-based permission logic.
+
+🔒 CORE PERMISSION PRINCIPLE (LOCKED)
+
+Permission is a decision, not a property.
+
+Actors “have” capabilities
+
+System decides permission at request time
+
+Decision is always contextual and state-aware
+
+🧱 PERMISSION EVALUATION INPUTS (AUTHORITATIVE)
+
+Every permission decision MUST consider all of the following:
+
+Actor
+
+Identity (human/system)
+
+Tenant binding
+
+Requested Capability
+
+Exact capability name
+
+No wildcard matching
+
+Execution Context
+
+One of:
+
+Authoring
+
+Runtime/Public
+
+System/Background
+
+Governance
+
+Resource State
+
+Examples (conceptual):
+
+Draft
+
+Published
+
+Archived
+
+Locked
+
+Tenant Scope
+
+Actor tenant
+
+Resource tenant
+
+If any input is missing or ambiguous → DENY.
+
+🧮 DECISION MATRIX (SEMANTIC, NOT IMPLEMENTATION)
+Rule 1 — Capability Presence
+
+Actor MUST possess the requested capability
+
+Capability MUST be tenant-scoped to the same tenant
+
+❌ Missing capability → deny
+
+Rule 2 — Context Compatibility
+
+Each capability is valid only in explicit contexts.
+
+Examples:
+
+content.read
+
+✔ Authoring
+
+✔ Runtime/Public
+
+content.write
+
+✔ Authoring
+
+❌ Runtime/Public
+
+content.publish
+
+✔ Authoring
+
+❌ Runtime/Public
+
+❌ Context mismatch → deny
+
+Rule 3 — Resource State Compatibility
+
+Capability validity depends on resource state.
+
+Examples:
+
+Draft:
+
+content.edit ✔
+
+content.publish ✔
+
+Published:
+
+content.edit ❌
+
+content.archive ✔
+
+❌ Invalid state transition → deny
+
+Rule 4 — Tenant Continuity
+
+Actor tenant MUST equal resource tenant
+
+No cross-tenant evaluation allowed
+
+❌ Tenant mismatch → deny + audit
+
+Rule 5 — Governance & System Overrides (Negative Only)
+
+Governance may:
+
+Observe
+
+Deny
+
+Governance may never allow
+
+System processes:
+
+Operate only within explicitly granted capabilities
+
+Never bypass rules
+
+❌ No positive override exists anywhere
+
+🔐 FAIL-CLOSED EVALUATION ORDER (LOCKED)
+
+Permission evaluation MUST follow this order:
+
+Resolve context
+
+Resolve tenant
+
+Verify capability presence
+
+Verify context compatibility
+
+Verify resource state compatibility
+
+Emit decision + evidence
+
+If evaluation stops early → DENY.
+
+🚫 EXPLICITLY FORBIDDEN SEMANTICS
+
+❌ “Owner can always edit”
+
+❌ “Admin bypass”
+
+❌ UI-based permission checks
+
+❌ Implicit publish rights
+
+❌ AI discretionary allowance
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Every permission decision must be:
+
+Deterministic
+
+Explainable
+
+Auditable
+
+Evidence must record:
+
+Actor
+
+Capability
+
+Context
+
+Resource state
+
+Decision (allow/deny)
+
+(Storage/logging deferred to later phases.)
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Planned Phase 29 docs (refined):
+
+docs/architecture/permission-semantics.md
+
+Cross-refs to:
+
+Runtime Contexts (Phase 28)
+
+Capability Model
+
+Role Composition
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No policy engines
+
+No middleware
+
+No guards
+
+No SWE-1
+
+🧭 PHASE 29 — STEP 4
+Fail-Closed Access Rules & Edge Cases (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Define karenge ki jab access ke time koi bhi confusion, race, ya edge case aaye, to system kaise behave kare.
+
+Golden rule:
+
+Doubt = Deny
+
+Is step ka kaam hai system ko panic-proof aur exploit-proof banana.
+
+Kya bilkul mana hai:
+Smart guessing, temporary allow, ya “user experience ke liye thoda allow”.
+
+🔒 CORE FAIL-CLOSED PRINCIPLE (LOCKED)
+
+Access control fails closed, never open.
+
+Missing data → deny
+
+Conflicting data → deny
+
+Stale data → deny
+
+Concurrent change → deny
+
+No retries that auto-allow. No grace windows.
+
+🧱 FAIL-CLOSED ACCESS RULES (AUTHORITATIVE)
+Rule 1 — Ambiguous Capability Resolution
+
+Case:
+
+Actor has multiple roles
+
+Capability presence unclear or duplicated
+
+Decision:
+
+Evaluate strictly
+
+If capability cannot be proven once, clearly → deny
+
+Rule 2 — Concurrent Role or Capability Changes
+
+Case:
+
+Role revoked while request is in-flight
+
+Capability added/removed concurrently
+
+Decision:
+
+Re-evaluate at decision point
+
+If state changed mid-evaluation → deny
+
+No optimistic locking semantics for access.
+
+Rule 3 — Stale Authorization Data
+
+Case:
+
+Cached roles/capabilities
+
+Delayed sync
+
+Decision:
+
+If freshness cannot be guaranteed → deny
+
+Freshness is mandatory for allow.
+
+Rule 4 — Partial Authorization
+
+Case:
+
+Action requires multiple capabilities
+
+Only some are present
+
+Decision:
+
+Deny entire action
+
+No partial success
+
+Example:
+Publish requires content.edit and content.publish.
+Missing one → deny.
+
+Rule 5 — Revocation Timing
+
+Case:
+
+Capability revoked after action started
+
+Decision:
+
+If decision not yet finalized → deny
+
+If finalized and committed → treat as completed action (audited)
+
+No retroactive rollback here (handled in later phases).
+
+Rule 6 — Cross-Context Drift
+
+Case:
+
+Context changes during request
+
+Example: Authoring → Runtime
+
+Decision:
+
+Re-evaluate permissions
+
+If mismatch → deny
+
+Context stability is required.
+
+Rule 7 — Resource State Mutation During Evaluation
+
+Case:
+
+Resource state changes (draft → published)
+
+Decision:
+
+If state mismatch detected → deny
+
+Require explicit retry
+
+🚫 EXPLICITLY FORBIDDEN EDGE HANDLING
+
+❌ “Allow but warn”
+
+❌ “Allow once”
+
+❌ “Allow until refresh”
+
+❌ Silent downgrade
+
+❌ UI-based override
+
+🧾 AUDIT & EVIDENCE (DESIGN)
+
+Every fail-closed denial must record:
+
+Which rule triggered
+
+Actor identity
+
+Capability requested
+
+Context
+
+Resource state snapshot
+
+This makes denial explainable, not opaque.
+
+📄 DOCUMENTATION IMPACT (DESIGN-ONLY)
+
+Phase 29 docs impacted/expanded:
+
+docs/architecture/permission-semantics.md
+
+docs/architecture/fail-closed-access-rules.md (new)
+
+(No files written yet.)
+
+⛔ STILL NOT ALLOWED
+
+No caching strategies
+
+No concurrency primitives
+
+No retries
+
+No SWE-1
+
+🧭 PHASE 29 — STEP 5
+Documentation Placement & Phase 29 Closure Plan (DESIGN)
+🧠 SIMPLE HINDI SUMMARY (MANDATORY)
+
+Kya karenge:
+Phase 29 ke saare design outputs ko exact documentation files aur locations me map karenge, aur closure ka clear plan define karenge.
+
+Kyun zaroori:
+Galat placement ya adhoora closure:
+
+Audit fail karta hai
+
+Security semantics confuse karta hai
+
+Future AI phases ko unsafe banata hai
+
+Kya bilkul mana hai:
+Extra files, governance pollution, ya premature state updates.
+
+📁 AUTHORITATIVE DOCUMENTATION PLACEMENT (LOCKED)
+✅ PRIMARY LOCATION (ONLY)
+
+All Phase 29 outputs belong ONLY under:
+
+docs/architecture/
+
+📄 FILES TO BE CREATED (AT EXECUTION TIME)
+
+⚠️ Note: Abhi koi file create nahi ho rahi — yeh sirf mapping hai.
+
+1️⃣ capability-model.md
+
+Contains:
+
+Actor vs Capability definitions
+
+Capability taxonomy (content / tenant / system / governance)
+
+Capability scoping rules (tenant + context aware)
+
+Explicit non-goals (no wildcards, no implicit access)
+
+2️⃣ role-composition.md
+
+Contains:
+
+Role definition semantics
+
+Tenant-scoped role rules
+
+Assignment invariants
+
+Least-privilege principles
+
+Forbidden role patterns (global admin, implicit owner)
+
+3️⃣ permission-semantics.md
+
+Contains:
+
+Permission evaluation model:
+
+Context × Capability × Resource State
+
+Evaluation order (fail-closed)
+
+Governance negative-only role
+
+Evidence requirements
+
+4️⃣ fail-closed-access-rules.md
+
+Contains:
+
+Edge cases & concurrency rules
+
+Revocation timing
+
+Partial authorization handling
+
+Stale data handling
+
+Explicit denial patterns
+
+🔗 REQUIRED CROSS-REFERENCES (NO DUPLICATION)
+
+Each Phase 29 document MUST:
+
+Reference Phase 28 runtime contexts
+
+Reference other Phase 29 documents by filename
+
+Avoid restating Phase 28 rules verbatim
+
+🚫 WHAT MUST NOT BE CREATED
+
+❌ No files in governance/
+❌ No ADRs
+❌ No updates to phase-backbone.md
+❌ No updates to current-state.md until closure
+❌ No progress-log updates until closure
+
+🧾 PHASE 29 CLOSURE CONDITIONS (DESIGN-ONLY)
+
+Phase 29 can be CLOSED only when all of the following occur:
+
+All 4 architecture documents are:
+
+Written
+
+Internally consistent
+
+Fail-closed by design
+
+Documentation audit passes
+
+No code, tests, routes, or configs are added
+
+ONE clean commit contains:
+
+Only Phase 29 docs
+
+docs/llm-handoff/current-state.md updated:
+
+Phase 29 marked COMPLETED
+
+docs/progress-log.md updated:
+
+Phase 29 entry added
+
+Fresh ZIP generated from pushed state
+
+🔐 MODE & AUTHORIZATION CHECK
+
+Current mode: DESIGN-ONLY
+
+SWE-1: ❌ NOT AUTHORIZED
+
+Writing files: ❌ NOT YET AUTHORIZED
+
+✅ PHASE 29 — DESIGN COMPLETE
+
+All design steps (1–5) for Phase 29 are now conceptually complete.
+
+No further design work is allowed in this phase without switching mode.
