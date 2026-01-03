@@ -117,6 +117,13 @@
 - **Status**: Completed
 - **Summary**: Data ownership taxonomy defined, lifecycle stages established, immutability and deletion semantics locked, no code or schema changes made
 
+## Phase 26: Trust, Identity & Access Semantics
+- **Phase Number**: 26
+- **Phase Name**: Trust, Identity & Access Semantics
+- **Nature**: Design-only
+- **Status**: Completed
+- **Summary**: Identity and actor taxonomy defined, trust boundaries and authority semantics locked, roles, permissions, and delegation semantics defined, authentication vs authorization separation enforced, no code or schema changes made
+
 ## Next Steps
 - Phase 20 has not started
 - Implementation activities must follow defined guardrails
