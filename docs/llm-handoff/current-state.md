@@ -2,9 +2,9 @@
 
 *Last Updated: 2026-01-03*  
 *Governance Version: 1.3.3 LTS*  
-*Phase: 28 - Runtime Boundaries & Execution Context Semantics (COMPLETED)*
+*Phase: 29 - Access Control, Capability Model & Permission Semantics (COMPLETED)*
 
-## Governance Status (Phase 28 - Completed & Closed)
+## Governance Status (Phase 29 - Completed & Closed)
 - [x] Implementation readiness criteria established
 - [x] Implementation guardrails defined and documented
 - [x] Capability boundaries verified and documented
@@ -41,6 +41,11 @@
 - [x] Context transition semantics established
 - [x] Boundary enforcement rules documented
 - [x] Failure and ambiguity handling rules defined
+- [x] Access control semantics defined and locked
+- [x] Capability model established
+- [x] Role composition rules documented
+- [x] Permission evaluation semantics defined
+- [x] Fail-closed access rules established
 
 ## Current System State
 
@@ -70,6 +75,11 @@
 - **Boundary Enforcement Rules**: Established context declaration, tenant binding, and operation restrictions
 - **Context Transition Semantics**: Defined allowed and forbidden transitions with audit requirements
 - **Failure & Ambiguity Rules**: Established failure classes and ambiguity handling patterns
+- **Access Control Semantics**: Defined capability-based access, role composition, and permission evaluation
+- **Capability Model**: Established atomic capability definitions and tenant-scoped taxonomy
+- **Role Composition Rules**: Documented role assignment invariants and composition principles
+- **Permission Evaluation Semantics**: Defined contextual decision matrix and fail-closed evaluation
+- **Fail-Closed Access Rules**: Established edge cases and forbidden handling patterns
 - **Multi-Tenant Architecture**: Path-based tenant resolution with strict data isolation
 - **Authentication System**: Basic email/password authentication with tenant scoping
 - **Pages Management**: Basic CRUD operations for tenant-scoped pages
@@ -166,11 +176,11 @@
 - **Data Protection**: No sensitive data exposure in current implementation
 
 ## Next Phase Status
-**Current Phase**: Phase 28 (Runtime Boundaries & Execution Context Semantics - COMPLETED)
+**Current Phase**: Phase 29 (Access Control, Capability Model & Permission Semantics - COMPLETED)
 
-Phase 28 was design-only and documentation-only, successfully executed and audited. Runtime boundaries, execution contexts, context transitions, and failure handling patterns are now defined and locked. No execution phase is currently active.
+Phase 29 defined and locked access control semantics, capability model, role composition rules, permission evaluation, and fail-closed access patterns, establishing constitutional access discipline. Phase 29 was design-only and documentation-only, successfully executed and audited. No execution phase is currently active.
 
-**Next phase after 28**: Phase 29 (Implementation Foundation) - NOT yet authorized
+**Next phase after 29**: Phase 30 (Implementation Foundation) - NOT yet authorized
 
 ## Handoff Notes
 - Phase 19 implementation is complete and documented
@@ -263,6 +273,7 @@ Phase 28 was design-only and documentation-only, successfully executed and audit
 - [x] Phase 26: Trust, Identity & Access Semantics (Completed)
 - [x] Phase 27: Event, State Change & Audit Semantics (Completed)
 - [x] Phase 28: Runtime Boundaries & Execution Context Semantics (Completed)
+- [x] Phase 29: Access Control, Capability Model & Permission Semantics (Completed)
 - [x] Governance framework: Complete
 - [x] Documentation taxonomy: Complete
 - [x] Implementation guardrails: Complete
@@ -276,12 +287,17 @@ Phase 28 was design-only and documentation-only, successfully executed and audit
 - [x] Trust, identity and access semantics: Complete
 - [x] Event, state change and audit semantics: Complete
 - [x] Runtime boundaries and execution context semantics: Complete
-- [ ] Phase 29: Not yet authorized (Implementation Foundation)
+- [x] Access control semantics: Complete
+- [x] Capability model: Complete
+- [x] Role composition rules: Complete
+- [x] Permission evaluation semantics: Complete
+- [x] Fail-closed access rules: Complete
+- [ ] Phase 30: Not yet authorized (Implementation Foundation)
 - [ ] Implementation: Not started (guardrails define allowed activities)
 - [ ] Production deployment: Not ready
 
 ## Important Notes
-- This version represents design and documentation completion through Phase 28
+- This version represents design and documentation completion through Phase 29
 - Phase 20 completed phase backbone and planning framework
 - Phase 21 completed governance hardening and drift prevention controls
 - Phase 22 completed system boundaries and invariants with violation handling
@@ -291,6 +307,7 @@ Phase 28 was design-only and documentation-only, successfully executed and audit
 - Phase 26 completed trust, identity, and access semantics
 - Phase 27 completed event, state change, and audit semantics
 - Phase 28 completed runtime boundaries and execution context semantics
+- Phase 29 completed access control, capability model, and permission semantics
 - System boundaries are defined and locked as constitutional governance rules
 - System invariants are established as non-negotiable truths
 - Capability taxonomy defines allowed system behavior domains
@@ -302,7 +319,7 @@ Phase 28 was design-only and documentation-only, successfully executed and audit
 - Data lifecycle semantics establish constitutional data governance
 - Data immutability and deletion semantics enforce compliance and auditability
 - Trust boundaries and identity taxonomy define actor authority and limits
-- Access control semantics establish roles, permissions, and delegation rules
+- Access control semantics establish capability-based access, role composition, and permission evaluation
 - Authentication vs authorization separation prevents security confusion
 - Event taxonomy defines immutable facts and causal relationships
 - State change semantics establish authoritative truth transitions
@@ -312,6 +329,11 @@ Phase 28 was design-only and documentation-only, successfully executed and audit
 - Boundary enforcement rules establish context isolation and tenant binding
 - Context transition semantics define allowed and prohibited state changes
 - Failure and ambiguity handling patterns ensure predictable system behavior
+- Access control semantics ensure fail-closed, capability-based access decisions
+- Capability model establishes atomic capability definitions and tenant-scoped taxonomy
+- Role composition rules ensure proper role assignment and prevent privilege escalation
+- Permission evaluation semantics ensure contextual, deterministic access decisions
+- Fail-closed access rules ensure predictable edge case handling
 - Violation handling and STOP conditions are mandatory and enforceable
 - No implementation beyond basic CMS foundation exists
 - All governance requirements are satisfied

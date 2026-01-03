@@ -138,6 +138,13 @@
 - **Status**: Completed
 - **Summary**: Runtime contexts defined, boundary enforcement rules documented, context transitions established, failure and ambiguity handling patterns created, documentation created and audit passed, phase now closed
 
+## Phase 29: Access Control, Capability Model & Permission Semantics
+- **Phase Number**: 29
+- **Phase Name**: Access Control, Capability Model & Permission Semantics
+- **Nature**: Design-only
+- **Status**: Completed
+- **Summary**: Access control semantics defined, capability model established, role composition rules documented, permission evaluation semantics defined, fail-closed access rules created, documentation completed and audit passed, phase now closed
+
 ## Next Steps
 - Phase 20 has not started
 - Implementation activities must follow defined guardrails
