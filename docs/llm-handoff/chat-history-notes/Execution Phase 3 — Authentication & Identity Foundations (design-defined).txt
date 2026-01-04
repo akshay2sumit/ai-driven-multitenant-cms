@@ -1,0 +1,103 @@
+Mode: EXECUTION-AUTHORIZED
+Active Phase: Execution Phase 3 — Authentication & Identity Foundations (design-defined)
+Executor: SWE-1 (execution-only)
+Authority & Audit: Aarav
+
+No other phase is active. Phase mixing is forbidden.
+
+1️⃣ Phase 3 — Hindi Brief (Founder-Safe & Binding)
+🔹 KYA KIYA JAYEGA (WHAT)
+
+Is phase mein hum sirf identity aur authentication ke foundations banayenge:
+
+Identity models & contracts (user, credential, identity linkage)
+
+Authentication mechanism ka framework (interfaces, services, guards)
+
+Password / token handling ke stubs (secure, inactive by default)
+
+Fail-closed defaults (unauthenticated = no access)
+
+⚠️ Login flows, roles, permissions, sessions, UI — kuchh bhi nahi.
+
+🔹 KYON ZAROORI HAI (WHY)
+
+Tenant isolation ke baad identity ka foundation aata hai
+
+Aage ke saare permissions, CMS actions, audit trails identity par depend karte hain
+
+Agar yahan coupling ya shortcuts hue → system unsafe ho jaata hai
+
+Ye phase kaun ho? ka jawab deta hai —
+kya kar sakte ho? baad ke phases mein aayega.
+
+🔹 KYA BILKUL ALLOWED NAHI HAI (NOT ALLOWED)
+
+❌ Authorization / Roles / Permissions
+❌ Login UI / Controllers / Routes
+❌ Sessions, cookies, remember-me
+❌ OAuth / Social login
+❌ CMS behavior
+❌ Public APIs
+❌ AI behavior
+❌ Cross-tenant identity usage
+
+2️⃣ Phase 3 — HARD SCOPE (NON-NEGOTIABLE)
+✅ ALLOWED OUTPUTS ONLY
+A. Identity & Authentication Foundations
+
+Identity entities (as per design)
+
+Credential abstractions (password/token interfaces only)
+
+Authentication service skeletons (inactive)
+
+Guards/middleware stubs (fail-closed)
+
+B. Database (If Design Requires)
+
+ONLY identity-related migrations defined by design
+
+Constraints for tenant-scoped identity
+
+❌ No seed/demo users
+
+C. Documentation (MANDATORY)
+
+docs/llm-handoff/current-state.md update (Phase 3)
+
+docs/progress-log.md entry
+
+Developer docs:
+
+Identity model intent
+
+Authentication flow (high-level, non-behavioral)
+
+User docs:
+
+System still not user-operable
+
+D. Testing (MANDATORY DECISION)
+
+Declare auth/identity testing strategy
+
+Explicitly justify deferred executable tests
+
+3️⃣ Phase Discipline Reminder (ABSOLUTE)
+
+ONE phase = ONE Git commit
+
+Docs → Tests → Code → Audit → Commit → Push → ZIP
+
+current-state.md must be updated in the SAME commit
+
+SWE-1 CANNOT:
+
+Implement authorization
+
+Add login flows or sessions
+
+Add UI/routes
+
+Close the phase
