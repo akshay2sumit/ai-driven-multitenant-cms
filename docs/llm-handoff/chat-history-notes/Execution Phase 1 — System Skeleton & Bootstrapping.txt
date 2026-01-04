@@ -1,0 +1,132 @@
+Execution Phase 1 — System Skeleton & Bootstrapping
+
+No phase reordering
+
+No scope invention
+
+No design changes allowed
+
+✔️ This phase is legitimate, next-in-sequence, and unblocked.
+
+5️⃣ Mode Declaration (Mandatory)
+
+Current Mode: DESIGN-ONLY (CLOSED)
+Next Mode (if authorized): EXECUTION-AUTHORIZED
+
+⚠️ No execution has started yet.
+SWE-1 has NOT been activated.
+
+6️⃣ Hindi Summary (Founder-Safe)
+
+Ab system bilkul ready hai coding ke liye.
+
+Design lock ho chuka hai
+
+Architecture freeze ho chuki hai
+
+Repo clean aur audited hai
+
+Next step sirf “System Skeleton” banana hai
+
+Koi feature, UI, API ya AI ka kaam allowed nahi hoga
+
+Yeh phase sirf foundation ke liye hai — taaki future me system strong rahe.
+
+7️⃣ Awaiting Explicit Authorization
+
+Agar aap agree karte hain, to exactly yeh likhiye:
+
+Authorize Execution Phase 1 — System Skeleton & Bootstrapping
+
+Uske baad main:
+
+Phase scope Hindi me finalize karunga
+
+Testing expectations define karunga
+
+SWE-1 ko tight, auditable execution prompt dunga
+
+1️⃣ Phase 1 — Hindi Brief (Founder-Safe, Binding)
+🔹 KYA KIYA JAYEGA (WHAT)
+
+Is phase me hum system ka foundation skeleton banayenge:
+
+CodeIgniter 4 project ko governance-aligned structure me align karna
+
+Core folders, namespaces, base classes create karna
+
+Tenant-safe bootstrapping (without business logic)
+
+Fail-closed defaults (nothing public, nothing assumed)
+
+Documentation + tests ke placeholders (real tests later phases me)
+
+⚠️ Is phase me koi feature nahi banega.
+
+🔹 KYON ZAROORI HAI (WHY)
+
+Agar skeleton weak hota hai:
+
+Aage jaakar multi-tenant system break hota hai
+
+Security leaks aate hain
+
+AI integration unsafe ho jaata hai
+
+Ye phase building ki foundation hai — dikhai nahi deta, par sab kuch isi par tikta hai.
+
+🔹 KYA BILKUL ALLOWED NAHI HAI (NOT ALLOWED)
+
+❌ UI
+❌ APIs
+❌ Public routes
+❌ Authentication / login
+❌ AI features
+❌ Business modules
+❌ Database schema (except config stubs if required)
+❌ Plugin system
+❌ “Future ke liye thoda bana dete hain” — STRICTLY NO
+
+2️⃣ Phase 1 — HARD SCOPE (NON-NEGOTIABLE)
+✅ ALLOWED OUTPUTS ONLY
+A. Code Skeleton (CI4-aligned)
+
+Base namespaces (Core, Governance, Tenant, Runtime, Support)
+
+Abstract base classes (no logic)
+
+Safe boot sequence (no side effects)
+
+Environment-safe config defaults (fail-closed)
+
+B. Documentation (MANDATORY)
+
+Phase 1 documentation update
+
+current-state.md update (same commit)
+
+What exists vs what does NOT exist (clear)
+
+C. Testing
+
+Test strategy declaration:
+
+What is intentionally NOT tested yet (with justification)
+
+Empty test scaffolds allowed
+
+3️⃣ Phase Discipline Reminder (ABSOLUTE)
+
+ONE phase = ONE Git commit
+
+Docs → Tests → Code → Audit → Commit → Push → ZIP
+
+current-state.md must be updated in SAME commit
+
+SWE-1 CANNOT:
+
+decide scope
+
+add features
+
+mark phase complete
