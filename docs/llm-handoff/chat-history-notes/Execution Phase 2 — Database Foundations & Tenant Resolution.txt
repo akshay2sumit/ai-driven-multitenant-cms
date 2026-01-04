@@ -1,0 +1,115 @@
+Mode: EXECUTION-AUTHORIZED
+Active Phase: Execution Phase 2 — Database Foundations & Tenant Resolution
+Executor: SWE-1 (execution-only)
+Authority & Audit: Aarav
+
+No other phase is active. Phase mixing is forbidden.
+
+1️⃣ Phase 2 — Hindi Brief (Founder-Safe & Binding)
+🔹 KYA KIYA JAYEGA (WHAT)
+
+Is phase mein hum system ke do core foundations banayenge:
+
+Database Foundations
+
+Design ke hisaab se migrations create karna
+
+Tenant isolation ke liye required base tables
+
+Safe defaults (no seed data, no demo content)
+
+Tenant Resolution (FOUNDATIONAL ONLY)
+
+Tenant identify karne ka mechanism
+
+Context establish karna (request → tenant)
+
+No behavior, no permissions, no routing logic
+
+⚠️ Sirf foundation — business behavior nahi.
+
+🔹 KYON ZAROORI HAI (WHY)
+
+Multi-tenant system bina tenant resolution ke unsafe hota hai
+
+Database bina isolation ke data leak karta hai
+
+Ye phase aage ke har feature ka base contract banata hai
+
+Agar yahan galti hui → baad mein kuch bhi safe nahi rahega.
+
+🔹 KYA BILKUL ALLOWED NAHI HAI (NOT ALLOWED)
+
+❌ Authentication / Login
+❌ Authorization / Roles
+❌ CMS features (Pages, Posts, Publishing)
+❌ Public routes / APIs
+❌ UI
+❌ AI behavior
+❌ Cross-tenant queries
+❌ Seed / demo data
+❌ Silent defaults
+
+2️⃣ Phase 2 — HARD SCOPE (NON-NEGOTIABLE)
+✅ ALLOWED OUTPUTS ONLY
+A. Database Foundations
+
+Migrations ONLY (as per design docs)
+
+Tenant-aware base tables
+
+Indexes and constraints for isolation
+
+No data insertion
+
+B. Tenant Resolution (Foundation)
+
+Tenant identifier extraction (path-based as designed)
+
+Tenant context object (read-only)
+
+Fail-closed behavior if tenant missing/invalid
+
+No permission checks, no auth coupling
+
+C. Documentation (MANDATORY)
+
+current-state.md update (Phase 2)
+
+progress-log.md entry
+
+Developer docs:
+
+DB schema intent
+
+Tenant resolution flow (high-level)
+
+User docs:
+
+State that system is still non-usable
+
+D. Testing (MANDATORY DECISION)
+
+DB migration test strategy declaration
+
+Tenant resolution test plan (even if deferred)
+
+Explicit justification for any deferred tests
+
+3️⃣ Phase Discipline Reminder (ABSOLUTE)
+
+ONE phase = ONE Git commit
+
+Docs → Tests → Code → Audit → Commit → Push → ZIP
+
+current-state.md must be updated in the SAME commit
+
+SWE-1 CANNOT:
+
+Add auth
+
+Add CMS logic
+
+Change schema beyond design
+
+Close the phase

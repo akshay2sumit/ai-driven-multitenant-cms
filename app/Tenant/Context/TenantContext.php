@@ -2,122 +2,171 @@
 
 namespace App\Tenant\Context;
 
-use CodeIgniter\HTTP\RequestInterface;
-use RuntimeException;
-
 /**
  * Tenant Context
  * 
- * Provides request-scoped, type-safe access to the current tenant identifier.
+ * Read-only tenant context object for the AIBOS Multi-Tenant CMS.
  * 
- * Responsibilities:
- * - Provides controlled access to the current tenant identifier
- * - Ensures tenant context is only accessed when available
- * - Maintains thread safety through static properties
+ * PURPOSE: Provide immutable tenant information for request lifecycle
+ * PHASE: Execution Phase 2 — Database Foundations & Tenant Resolution
  * 
- * Non-Responsibilities:
- * - Does NOT validate tenant existence
- * - Does NOT handle tenant resolution
- * - Does NOT manage tenant data or persistence
+ * NOTE: This context is intentionally read-only and minimal.
+ * No business logic, permissions, or authentication coupling is allowed
+ * in Phase 2. This context exists only to establish tenant identification
+ * foundation for future phases.
  * 
- * @see ADR-002: System Architecture Baseline
- * @see ADR-003: Tenant Resolution Strategy
+ * SECURITY: Fail-closed by design - invalid or missing tenants result
+ * in null context, never partial or assumed data.
  * 
- * @method static string require() Get the current tenant identifier or throw an exception
- * @method static string|null get() Get the current tenant identifier if available
- * @method static bool has() Check if a tenant context is available
- * @method static void set(?string $tenantId) Set the current tenant identifier
- * @method static void ensure() Ensure a tenant context is available
+ * @package App\Tenant\Context
  */
-final class TenantContext
+class TenantContext
 {
-    private const ERROR_NO_TENANT = 'No tenant context is currently set. Ensure you are within a valid request context and tenant resolution has occurred.';
-    private const ERROR_INVALID_ACCESS = 'Tenant context accessed outside of request scope or after request completion.';
-
     /**
-     * @var string|null The current tenant identifier
-     */
-    private static ?string $currentTenant = null;
-
-    /**
-     * @var bool Whether the current request has been initialized
-     */
-    private static bool $initialized = false;
-
-    /**
-     * Prevent instantiation
-     */
-    private function __construct() {}
-
-    /**
-     * Get the current tenant identifier or throw an exception if not set
+     * Tenant identifier
      * 
-     * @return string The current tenant identifier
-     * @throws RuntimeException If no tenant context is available
-     */
-    public static function require(): string
-    {
-        self::ensureInitialized();
-        
-        if (self::$currentTenant === null) {
-            throw new RuntimeException(self::ERROR_NO_TENANT);
-        }
-        
-        return self::$currentTenant;
-    }
-
-    /**
-     * Get the current tenant identifier if available
+     * NOTE: Read-only property set only during construction.
+     * Tenant identifier validation happens during resolution, not here.
      * 
-     * @return string|null The current tenant identifier or null if not set
+     * @var string|null
      */
-    public static function get(): ?string
-    {
-        self::ensureInitialized();
-        return self::$currentTenant;
-    }
-
+    private ?string $tenantIdentifier = null;
+    
     /**
-     * Check if a tenant context is available
-     */
-    public static function has(): bool
-    {
-        self::ensureInitialized();
-        return self::$currentTenant !== null;
-    }
-
-    /**
-     * Set the current tenant identifier
+     * Tenant ID (database primary key)
      * 
-     * @internal This method should only be called by the tenant resolution system
-     */
-    public static function set(?string $tenantId): void
-    {
-        self::$initialized = true;
-        self::$currentTenant = $tenantId;
-    }
-
-    /**
-     * Ensure a tenant context is available
+     * NOTE: Read-only property set only during construction.
+     * This will be populated in future phases when database access is allowed.
      * 
-     * @throws RuntimeException If no tenant context is available
+     * @var int|null
      */
-    public static function ensure(): void
-    {
-        if (!self::has()) {
-            throw new RuntimeException(self::ERROR_NO_TENANT);
-        }
-    }
-
+    private ?int $tenantId = null;
+    
     /**
-     * Ensure the context has been properly initialized
+     * Tenant status
      * 
-     * @throws RuntimeException If accessed outside of request scope
+     * NOTE: Read-only property set only during construction.
+     * This will be populated in future phases when database access is allowed.
+     * 
+     * @var string|null
      */
-    private static function ensureInitialized(): void
+    private ?string $status = null;
+    
+    /**
+     * Tenant Context constructor
+     * 
+     * NOTE: Private constructor to enforce factory pattern.
+     * Context creation must go through TenantResolver in Phase 2+.
+     * 
+     * @param string|null $tenantIdentifier
+     * @param int|null $tenantId
+     * @param string|null $status
+     */
+    private function __construct(
+        ?string $tenantIdentifier,
+        ?int $tenantId = null,
+        ?string $status = null
+    ) {
+        $this->tenantIdentifier = $tenantIdentifier;
+        $this->tenantId = $tenantId;
+        $this->status = $status;
+    }
+    
+    /**
+     * Create valid tenant context
+     * 
+     * NOTE: Factory method for creating valid tenant context.
+     * This method will be used by TenantResolver in future phases.
+     * 
+     * @param string $tenantIdentifier
+     * @param int $tenantId
+     * @param string $status
+     * @return self
+     */
+    public static function create(
+        string $tenantIdentifier,
+        int $tenantId,
+        string $status
+    ): self {
+        return new self($tenantIdentifier, $tenantId, $status);
+    }
+    
+    /**
+     * Create null tenant context (fail-closed)
+     * 
+     * NOTE: Factory method for creating null context when tenant is invalid.
+     * This implements the fail-closed security pattern.
+     * 
+     * @return self
+     */
+    public static function createNull(): self
     {
-        if (!self::$initialized) {
-            throw new RuntimeException(self::ERROR_INVALID_ACCESS);
-        }
+        return new self(null);
+    }
+    
+    /**
+     * Get tenant identifier
+     * 
+     * NOTE: Read-only getter. Returns null for invalid tenants.
+     * 
+     * @return string|null
+     */
+    public function getTenantIdentifier(): ?string
+    {
+        return $this->tenantIdentifier;
+    }
+    
+    /**
+     * Get tenant ID
+     * 
+     * NOTE: Read-only getter. Returns null until Phase 3+ database access.
+     * 
+     * @return int|null
+     */
+    public function getTenantId(): ?int
+    {
+        return $this->tenantId;
+    }
+    
+    /**
+     * Get tenant status
+     * 
+     * NOTE: Read-only getter. Returns null until Phase 3+ database access.
+     * 
+     * @return string|null
+     */
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+    
+    /**
+     * Check if tenant context is valid
+     * 
+     * NOTE: Fail-closed validation. Context is valid only if tenant identifier exists.
+     * This method will be enhanced in future phases with database validation.
+     * 
+     * @return bool
+     */
+    public function isValid(): bool
+    {
+        // Phase 2: Basic validation - tenant identifier must exist
+        // Future phases will add database validation
+        return $this->tenantIdentifier !== null;
+    }
+    
+    /**
+     * Check if tenant is active
+     * 
+     * NOTE: Always false in Phase 2 since database access is not allowed.
+     * This method will be implemented in future phases.
+     * 
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        // Phase 2: No database access - assume inactive
+        // Future phases will check actual tenant status
+        return false;
     }
 }
