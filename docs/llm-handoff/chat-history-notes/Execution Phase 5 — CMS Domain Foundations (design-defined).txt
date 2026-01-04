@@ -1,0 +1,95 @@
+MODE: EXECUTION-AUTHORIZED
+
+Active Phase: Execution Phase 5 — CMS Domain Foundations (design-defined)
+Role: Aarav — Governance Architect, Lead System Designer, Project Manager
+Executor: SWE-1 (execution-only)
+
+Phase 5 is now formally AUTHORIZED. Execution may proceed only within the scope defined below.
+
+1️⃣ Phase 5 — Hindi Brief (Founder-Safe & Binding)
+🔹 KYA KIYA JAYEGA (WHAT)
+
+Is phase mein hum CMS ke domain foundations banayenge — sirf foundation, features nahi:
+
+Core CMS domain entities & contracts (Pages, Posts, Content, Media — structure only)
+
+Repository & service skeletons (inactive, no behavior)
+
+Publishing states & lifecycle enums (definitions only)
+
+Domain boundaries (authoring vs runtime — wiring only)
+
+⚠️ Is phase mein koi actual CMS feature kaam nahi karega.
+
+🔹 KYON ZAROORI HAI (WHY)
+
+CMS bina clear domain boundaries ke maintainable nahi hota
+
+Aage ke features (editing, publishing, rendering) isi foundation par depend karte hain
+
+Ye phase “kya exist karta hai” define karta hai, “kya karta hai” nahi
+
+Yeh domain vocabulary banata hai — behavior baad mein aayega.
+
+🔹 KYA BILKUL ALLOWED NAHI HAI (NOT ALLOWED)
+
+❌ UI / Admin panels
+❌ Controllers / Routes
+❌ CRUD behavior
+❌ Content rendering
+❌ Public endpoints
+❌ Workflow execution
+❌ AI content logic
+❌ Seed/demo content
+
+2️⃣ Phase 5 — HARD SCOPE (NON-NEGOTIABLE)
+✅ ALLOWED OUTPUTS ONLY
+A. CMS Domain Foundations
+
+Domain entities & value objects (Page, Post, ContentBlock, Media, etc.)
+
+Status / lifecycle enums (Draft, Review, Published — definitions only)
+
+Repository interfaces (no queries)
+
+Service skeletons (inactive)
+
+B. Database (If Design Requires)
+
+ONLY CMS-domain schema foundations defined in design
+
+Tenant-scoped constraints
+
+❌ No seed/demo content
+
+C. Documentation (MANDATORY)
+
+docs/llm-handoff/current-state.md (Phase 5)
+
+docs/progress-log.md (Phase 5 entry)
+
+Developer docs:
+
+CMS domain boundaries
+
+Entity responsibilities
+
+User docs:
+
+System still not user-operable
+
+D. Testing (MANDATORY DECISION)
+
+CMS domain testing strategy declaration
+
+Explicit justification for deferred executable tests
+
+3️⃣ Phase Discipline Reminder (ABSOLUTE)
+
+ONE phase = ONE Git commit
+
+Docs → Tests → Code → Audit → Commit → Push → ZIP
+
+current-state.md must be updated in the SAME commit
+
+ZIP generated after push (audit artifact)
